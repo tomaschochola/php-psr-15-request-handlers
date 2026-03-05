@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
 use NoDiscard;
+use Psr\Container\ContainerInterface;
 use UnexpectedValueException;
 
 use function is_string;
@@ -32,6 +33,12 @@ use const JSON_UNESCAPED_UNICODE;
  */
 readonly class JsonEncoder
 {
+    #[NoDiscard]
+    public static function provide(ContainerInterface $container): self
+    {
+        return new self();
+    }
+
     #[NoDiscard]
     public function encode(mixed $data): string
     {

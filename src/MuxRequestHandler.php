@@ -19,11 +19,14 @@ use ArrayIterator;
 use IteratorIterator;
 use NoDiscard;
 use Override;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Traversable;
+
+use function assert;
 
 /**
  * @no-named-arguments
@@ -34,13 +37,27 @@ readonly class MuxRequestHandler implements RequestHandlerInterface
 
     protected readonly GlobalPipelineInterface $global;
 
-    protected readonly PipelineRunner $runner;
+    protected readonly PipelineRequestHandler $runner;
 
-    public function __construct(MuxDeregistrator $deregistrator, PipelineRunner $runner, GlobalPipelineInterface $global)
+    public function __construct(MuxDeregistrator $deregistrator, PipelineRequestHandler $runner, GlobalPipelineInterface $global)
     {
         $this->deregistrator = $deregistrator;
         $this->runner = $runner;
         $this->global = $global;
+    }
+
+    #[NoDiscard]
+    public static function provide(ContainerInterface $container): RequestHandlerInterface
+    {
+        $deregistrator = $container->get(MuxDeregistrator::class);
+        $runner = $container->get(PipelineRequestHandler::class);
+        $global = $container->get(GlobalPipelineInterface::class);
+
+        assert($deregistrator instanceof MuxDeregistrator);
+        assert($runner instanceof PipelineRequestHandler);
+        assert($global instanceof GlobalPipelineInterface);
+
+        return new self($deregistrator, $runner, $global);
     }
 
     #[NoDiscard]

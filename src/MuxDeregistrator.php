@@ -16,8 +16,10 @@ declare(strict_types=1);
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
 use NoDiscard;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
+use function assert;
 use function explode;
 use function is_array;
 
@@ -31,6 +33,16 @@ readonly class MuxDeregistrator
     public function __construct(MuxRegistryInterface $registry)
     {
         $this->registry = $registry;
+    }
+
+    #[NoDiscard]
+    public static function provide(ContainerInterface $container): self
+    {
+        $registry = $container->get(MuxRegistryInterface::class);
+
+        assert($registry instanceof MuxRegistryInterface);
+
+        return new self($registry);
     }
 
     #[NoDiscard]

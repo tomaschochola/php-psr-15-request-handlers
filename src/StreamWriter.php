@@ -15,6 +15,8 @@ declare(strict_types=1);
 
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
+use NoDiscard;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\StreamInterface;
 use UnexpectedValueException;
 
@@ -25,6 +27,12 @@ use function mb_strlen;
  */
 readonly class StreamWriter
 {
+    #[NoDiscard]
+    public static function provide(ContainerInterface $container): self
+    {
+        return new self();
+    }
+
     public function write(StreamInterface $stream, string $data): void
     {
         $written = $stream->write($data);

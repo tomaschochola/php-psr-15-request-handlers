@@ -17,10 +17,13 @@ namespace TomasChochola\Psr\Http\RequestHandlers;
 
 use NoDiscard;
 use Override;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+
+use function assert;
 
 /**
  * @no-named-arguments
@@ -32,6 +35,16 @@ readonly class OkRequestHandler implements RequestHandlerInterface
     public function __construct(ResponseFactoryInterface $responseFactory)
     {
         $this->responseFactory = $responseFactory;
+    }
+
+    #[NoDiscard]
+    public static function provide(ContainerInterface $container): RequestHandlerInterface
+    {
+        $jsonResponseFactory = $container->get(ResponseFactoryInterface::class);
+
+        assert($jsonResponseFactory instanceof ResponseFactoryInterface);
+
+        return new self($jsonResponseFactory);
     }
 
     #[NoDiscard]

@@ -16,8 +16,11 @@ declare(strict_types=1);
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
 use NoDiscard;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
+
+use function assert;
 
 /**
  * @no-named-arguments
@@ -35,6 +38,20 @@ readonly class JsonResponseFactory
         $this->jsonEncoder = $jsonEncoder;
         $this->streamWriter = $streamWriter;
         $this->responseFactory = $responseFactory;
+    }
+
+    #[NoDiscard]
+    public static function provide(ContainerInterface $container): self
+    {
+        $jsonEncoder = $container->get(JsonEncoder::class);
+        $streamWriter = $container->get(StreamWriter::class);
+        $responseFactory = $container->get(ResponseFactoryInterface::class);
+
+        assert($jsonEncoder instanceof JsonEncoder);
+        assert($streamWriter instanceof StreamWriter);
+        assert($responseFactory instanceof ResponseFactoryInterface);
+
+        return new self($jsonEncoder, $streamWriter, $responseFactory);
     }
 
     #[NoDiscard]

@@ -17,6 +17,7 @@ namespace TomasChochola\Psr\Http\RequestHandlers;
 
 use NoDiscard;
 use Override;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Traversable;
 
@@ -25,6 +26,12 @@ use Traversable;
  */
 readonly class GlobalPipeline implements GlobalPipelineInterface
 {
+    #[NoDiscard]
+    public static function provide(ContainerInterface $container): self
+    {
+        return new self();
+    }
+
     #[NoDiscard]
     #[Override]
     public function pipeline(RequestInterface $request): Traversable

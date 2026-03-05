@@ -17,6 +17,7 @@ namespace TomasChochola\Psr\Http\RequestHandlers;
 
 use NoDiscard;
 use Override;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -30,6 +31,12 @@ use function str_replace;
  */
 readonly class WithRequestCookiesMiddleware implements MiddlewareInterface
 {
+    #[NoDiscard]
+    public static function provide(ContainerInterface $container): MiddlewareInterface
+    {
+        return new self();
+    }
+
     #[NoDiscard]
     #[Override]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface

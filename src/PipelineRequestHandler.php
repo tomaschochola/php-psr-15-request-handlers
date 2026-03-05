@@ -29,13 +29,19 @@ use function assert;
 /**
  * @no-named-arguments
  */
-readonly class PipelineRunner implements RequestHandlerInterface
+readonly class PipelineRequestHandler implements RequestHandlerInterface
 {
     protected readonly ContainerInterface $container;
 
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
+    }
+
+    #[NoDiscard]
+    public static function provide(ContainerInterface $container): self
+    {
+        return new self($container);
     }
 
     #[NoDiscard]

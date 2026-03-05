@@ -15,7 +15,9 @@ declare(strict_types=1);
 
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
+use NoDiscard;
 use Override;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -23,6 +25,13 @@ use Psr\Http\Message\ResponseInterface;
  */
 readonly class ResponseExiter extends ResponseEmitter
 {
+    #[NoDiscard]
+    #[Override]
+    public static function provide(ContainerInterface $container): self
+    {
+        return new self();
+    }
+
     #[Override]
     public function emit(ResponseInterface $response): never
     {
