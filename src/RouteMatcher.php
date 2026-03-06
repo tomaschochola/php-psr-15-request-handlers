@@ -26,41 +26,44 @@ use function is_array;
 /**
  * @no-named-arguments
  */
-readonly class MuxDeregistrator
+readonly class RouteMatcher
 {
-    protected readonly MuxRegistryInterface $registry;
+    protected readonly RouteSettingsInterface $registry;
 
-    public function __construct(MuxRegistryInterface $registry)
+    public function __construct(RouteSettingsInterface $registry)
     {
         $this->registry = $registry;
     }
 
     #[NoDiscard]
-    public static function provide(ContainerInterface $container): self
+    public static function unload(ContainerInterface $container): self
     {
-        $registry = $container->get(MuxRegistryInterface::class);
+        $registry = $container->get(RouteSettingsInterface::class);
 
-        assert($registry instanceof MuxRegistryInterface);
+        assert($registry instanceof RouteSettingsInterface);
 
         return new self($registry);
     }
 
+    /**
+     * @return array{0: iterable<mixed, class-string<MiddlewareInterface|RequestHandlerInterface>>, 1: list<string>}
+     */
     #[NoDiscard]
-    public function route(ServerRequestInterface $request): MuxResultInterface
+    public function route(ServerRequestInterface $request): array
     {
         $method = $request->getMethod();
         $path = $request->getUri()->getPath();
 
         $exact = $this->registry->exact["{$method} {$path}"] ?? null;
 
-        if (is_array($exact)) {
-            return new MuxResult($exact, []);
+        if (is_iterable($exact)) {
+            return [$exact, []];
         }
 
         $trie = $this->registry->trie[$method] ?? null;
 
         if (!is_array($trie)) {
-            return new MuxResult([], []);
+            return [[], []];
         }
 
         $node = $trie;
@@ -89,16 +92,15 @@ readonly class MuxDeregistrator
                 continue;
             }
 
-            return new MuxResult([], []);
+            return [[], []];
         }
 
         $pipeline = $node['#'] ?? null;
 
-        if (is_array($pipeline)) {
-            /** @phpstan-ignore-next-line argument.type */
-            return new MuxResult($pipeline, $params);
+        if (is_iterable($pipeline)) {
+            return [$pipeline, $params];
         }
 
-        return new MuxResult([], []);
+        return [[], []];
     }
 }

@@ -18,12 +18,12 @@ namespace TomasChochola\Psr\Http\RequestHandlers;
 use AppendIterator;
 use ArrayIterator;
 use Iterator;
+use IteratorAggregate;
 use NoDiscard;
 use Override;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use TomasChochola\Psr\Container\MixedResolver;
-use TomasChochola\Psr\Container\RegistrarInterface;
+use TomasChochola\Psr\Container\MixedCargo;
 use Traversable;
 
 use function array_replace_recursive;
@@ -35,7 +35,7 @@ use function str_contains;
 /**
  * @no-named-arguments
  */
-readonly class MuxRegistrar implements RegistrarInterface
+readonly class RouteManifest implements IteratorAggregate
 {
     /**
      * @var AppendIterator<string, list<class-string<MiddlewareInterface|RequestHandlerInterface>>, Iterator<string, list<class-string<MiddlewareInterface|RequestHandlerInterface>>>>
@@ -63,7 +63,7 @@ readonly class MuxRegistrar implements RegistrarInterface
             $trie = array_replace_recursive($trie, [$method => $node]);
         }
 
-        yield MuxRegistryInterface::class => new MixedResolver(new MuxRegistry(iterator_to_array($this->exact), $trie));
+        yield RouteSettingsInterface::class => new MixedCargo(new RouteSettings(iterator_to_array($this->exact), $trie));
     }
 
     /**

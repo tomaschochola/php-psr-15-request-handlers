@@ -16,6 +16,8 @@ declare(strict_types=1);
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
 use ArrayIterator;
+use ArrayObject;
+use Iterator;
 use IteratorIterator;
 use NoDiscard;
 use Override;
@@ -31,47 +33,44 @@ use function assert;
 /**
  * @no-named-arguments
  */
-readonly class MuxRequestHandler implements RequestHandlerInterface
+readonly class RouteRequestHandler implements RequestHandlerInterface
 {
-    protected readonly MuxDeregistrator $deregistrator;
-
-    protected readonly GlobalPipelineInterface $global;
+    protected readonly RouteMatcher $deregistrator;
 
     protected readonly PipelineRequestHandler $runner;
 
-    public function __construct(MuxDeregistrator $deregistrator, PipelineRequestHandler $runner, GlobalPipelineInterface $global)
+    public function __construct(RouteMatcher $deregistrator, PipelineRequestHandler $runner)
     {
         $this->deregistrator = $deregistrator;
         $this->runner = $runner;
-        $this->global = $global;
     }
 
     #[NoDiscard]
-    public static function provide(ContainerInterface $container): RequestHandlerInterface
+    public static function unload(ContainerInterface $container): self
     {
-        $deregistrator = $container->get(MuxDeregistrator::class);
+        $deregistrator = $container->get(RouteMatcher::class);
         $runner = $container->get(PipelineRequestHandler::class);
-        $global = $container->get(GlobalPipelineInterface::class);
 
-        assert($deregistrator instanceof MuxDeregistrator);
+        assert($deregistrator instanceof RouteMatcher);
         assert($runner instanceof PipelineRequestHandler);
-        assert($global instanceof GlobalPipelineInterface);
 
-        return new self($deregistrator, $runner, $global);
+        return new self($deregistrator, $runner);
     }
 
     #[NoDiscard]
     #[Override]
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        return $this->runner->handle($this->pipe($request));
+        [$pipeline, $params] = $this->deregistrator->route($request);
+
+        return $this->runner->withPipeline($this->pipeline($request, $pipeline))->handle($request->withAttribute(ArrayObject::class, new ArrayObject($params)));
     }
 
     /**
      * @return Traversable<mixed, class-string<MiddlewareInterface|RequestHandlerInterface>>
      */
     #[NoDiscard]
-    protected function fallback(ServerRequestInterface $request): Traversable
+    protected function after(ServerRequestInterface $request): Traversable
     {
         yield NotFoundRequestHandler::class;
     }
@@ -80,22 +79,20 @@ readonly class MuxRequestHandler implements RequestHandlerInterface
      * @return Traversable<mixed, class-string<MiddlewareInterface|RequestHandlerInterface>>
      */
     #[NoDiscard]
-    protected function global(ServerRequestInterface $request): Traversable
+    protected function before(ServerRequestInterface $request): Traversable
     {
-        return $this->global->pipeline($request);
+        yield ExceptionHandlerMiddleware::class;
+
+        yield ErrorHandlerMiddleware::class;
     }
 
     #[NoDiscard]
-    protected function pipe(ServerRequestInterface $request): ServerRequestInterface
+    protected function pipeline(ServerRequestInterface $request, iterable $match): Iterator
     {
-        $result = $this->deregistrator->route($request);
+        yield from $this->before($request);
 
-        $pipeline = new MuxPipeline();
+        yield from $match;
 
-        $pipeline->append(new IteratorIterator($this->global($request)));
-        $pipeline->append(new ArrayIterator($result->pipeline));
-        $pipeline->append(new IteratorIterator($this->fallback($request)));
-
-        return $request->withAttribute(MuxPipelineInterface::class, $pipeline)->withAttribute(MuxParamsInterface::class, new MuxParams($result->params));
+        yield from $this->after($request);
     }
 }

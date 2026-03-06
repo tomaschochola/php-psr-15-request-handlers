@@ -36,7 +36,7 @@ use function stream_copy_to_stream;
 readonly class ResponseEmitter
 {
     #[NoDiscard]
-    public static function provide(ContainerInterface $container): self
+    public static function unload(ContainerInterface $container): self
     {
         return new self();
     }

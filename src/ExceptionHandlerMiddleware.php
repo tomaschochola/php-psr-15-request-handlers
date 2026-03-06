@@ -40,7 +40,7 @@ readonly class ExceptionHandlerMiddleware implements MiddlewareInterface
     }
 
     #[NoDiscard]
-    public static function provide(ContainerInterface $container): MiddlewareInterface
+    public static function unload(ContainerInterface $container): self
     {
         $responseFactory = $container->get(ResponseFactoryInterface::class);
 

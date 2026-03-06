@@ -15,6 +15,8 @@ declare(strict_types=1);
 
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
+use EmptyIterator;
+use Iterator;
 use LogicException;
 use NoDiscard;
 use Override;
@@ -33,13 +35,16 @@ readonly class PipelineRequestHandler implements RequestHandlerInterface
 {
     protected readonly ContainerInterface $container;
 
+    protected readonly Iterator $pipeline;
+
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
+        $this->pipeline = new EmptyIterator();
     }
 
     #[NoDiscard]
-    public static function provide(ContainerInterface $container): self
+    public static function unload(ContainerInterface $container): self
     {
         return new self($container);
     }
@@ -48,17 +53,13 @@ readonly class PipelineRequestHandler implements RequestHandlerInterface
     #[Override]
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $pipeline = $request->getAttribute(MuxPipelineInterface::class);
-
-        assert($pipeline instanceof MuxPipelineInterface);
-
-        if (!$pipeline->valid()) {
+        if (!$this->pipeline->valid()) {
             throw new LogicException('never');
         }
 
-        $current = $pipeline->current();
+        $current = $this->pipeline->current();
 
-        $pipeline->next();
+        $this->pipeline->next();
 
         $instance = $this->container->get($current);
 
@@ -71,5 +72,12 @@ readonly class PipelineRequestHandler implements RequestHandlerInterface
         }
 
         throw new LogicException('never');
+    }
+
+    public function withPipeline(Iterator $pipeline): static
+    {
+        return clone ($this, [
+            'pipeline' => $pipeline,
+        ]);
     }
 }

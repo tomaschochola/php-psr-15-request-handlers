@@ -33,7 +33,7 @@ use function set_error_handler;
 readonly class ErrorHandlerMiddleware implements MiddlewareInterface
 {
     #[NoDiscard]
-    public static function provide(ContainerInterface $container): MiddlewareInterface
+    public static function unload(ContainerInterface $container): self
     {
         return new self();
     }

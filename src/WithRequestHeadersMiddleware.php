@@ -33,7 +33,7 @@ use function is_string;
 readonly class WithRequestHeadersMiddleware implements MiddlewareInterface
 {
     #[NoDiscard]
-    public static function provide(ContainerInterface $container): MiddlewareInterface
+    public static function unload(ContainerInterface $container): self
     {
         return new self();
     }

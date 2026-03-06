@@ -25,7 +25,7 @@ use function assert;
 /**
  * @no-named-arguments
  */
-readonly class JsonResponseFactory
+readonly class JsonResponseForge
 {
     protected readonly JsonEncoder $jsonEncoder;
 
@@ -41,7 +41,7 @@ readonly class JsonResponseFactory
     }
 
     #[NoDiscard]
-    public static function provide(ContainerInterface $container): self
+    public static function unload(ContainerInterface $container): self
     {
         $jsonEncoder = $container->get(JsonEncoder::class);
         $streamWriter = $container->get(StreamWriter::class);

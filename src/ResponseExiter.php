@@ -27,7 +27,7 @@ readonly class ResponseExiter extends ResponseEmitter
 {
     #[NoDiscard]
     #[Override]
-    public static function provide(ContainerInterface $container): self
+    public static function unload(ContainerInterface $container): self
     {
         return new self();
     }

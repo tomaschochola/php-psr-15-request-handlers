@@ -15,29 +15,28 @@ declare(strict_types=1);
 
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
-use NoDiscard;
 use Override;
-use Psr\Container\ContainerInterface;
-use Psr\Http\Message\RequestInterface;
-use Traversable;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 /**
  * @no-named-arguments
  */
-readonly class GlobalPipeline implements GlobalPipelineInterface
+readonly class RouteSettings implements RouteSettingsInterface
 {
-    #[NoDiscard]
-    public static function provide(ContainerInterface $container): self
-    {
-        return new self();
-    }
-
-    #[NoDiscard]
     #[Override]
-    public function pipeline(RequestInterface $request): Traversable
-    {
-        yield ExceptionHandlerMiddleware::class;
+    public readonly array $exact;
 
-        yield ErrorHandlerMiddleware::class;
+    #[Override]
+    public readonly array $trie;
+
+    /**
+     * @param array<mixed, list<class-string<MiddlewareInterface|RequestHandlerInterface>>> $exact
+     * @param array<mixed, mixed> $trie
+     */
+    public function __construct(array $exact, array $trie)
+    {
+        $this->exact = $exact;
+        $this->trie = $trie;
     }
 }

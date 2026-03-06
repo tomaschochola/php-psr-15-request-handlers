@@ -31,7 +31,7 @@ use function parse_str;
 readonly class WithRequestQueryMiddleware implements MiddlewareInterface
 {
     #[NoDiscard]
-    public static function provide(ContainerInterface $container): MiddlewareInterface
+    public static function unload(ContainerInterface $container): self
     {
         return new self();
     }

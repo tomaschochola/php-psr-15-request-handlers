@@ -15,20 +15,21 @@ declare(strict_types=1);
 
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
-use NoDiscard;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Traversable;
 
 /**
  * @no-named-arguments
  */
-interface PipelineCollectionInterface
+interface RouteSettingsInterface
 {
     /**
-     * @return Traversable<mixed, class-string<MiddlewareInterface|RequestHandlerInterface>>
+     * @var array<mixed, list<class-string<MiddlewareInterface|RequestHandlerInterface>>>
      */
-    #[NoDiscard]
-    public function pipeline(RequestInterface $request): Traversable;
+    public array $exact { get; }
+
+    /**
+     * @var array<mixed, mixed>
+     */
+    public array $trie { get; }
 }

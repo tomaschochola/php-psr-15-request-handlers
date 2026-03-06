@@ -38,7 +38,7 @@ readonly class OkRequestHandler implements RequestHandlerInterface
     }
 
     #[NoDiscard]
-    public static function provide(ContainerInterface $container): RequestHandlerInterface
+    public static function unload(ContainerInterface $container): self
     {
         $jsonResponseFactory = $container->get(ResponseFactoryInterface::class);
 

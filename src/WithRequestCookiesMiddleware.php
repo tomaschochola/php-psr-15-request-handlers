@@ -32,7 +32,7 @@ use function str_replace;
 readonly class WithRequestCookiesMiddleware implements MiddlewareInterface
 {
     #[NoDiscard]
-    public static function provide(ContainerInterface $container): MiddlewareInterface
+    public static function unload(ContainerInterface $container): self
     {
         return new self();
     }

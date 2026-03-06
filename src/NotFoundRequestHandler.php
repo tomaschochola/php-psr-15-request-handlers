@@ -38,7 +38,7 @@ readonly class NotFoundRequestHandler implements RequestHandlerInterface
     }
 
     #[NoDiscard]
-    public static function provide(ContainerInterface $container): RequestHandlerInterface
+    public static function unload(ContainerInterface $container): self
     {
         $responseFactory = $container->get(ResponseFactoryInterface::class);
 
