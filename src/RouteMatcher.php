@@ -18,10 +18,13 @@ namespace TomasChochola\Psr\Http\RequestHandlers;
 use NoDiscard;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 use function assert;
 use function explode;
 use function is_array;
+use function is_iterable;
 
 /**
  * @no-named-arguments
@@ -46,7 +49,7 @@ readonly class RouteMatcher
     }
 
     /**
-     * @return array{0: iterable<mixed, class-string<MiddlewareInterface|RequestHandlerInterface>>, 1: list<string>}
+     * @return array{0: iterable<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>, 1: list<string>}
      */
     #[NoDiscard]
     public function route(ServerRequestInterface $request): array
@@ -98,6 +101,7 @@ readonly class RouteMatcher
         $pipeline = $node['#'] ?? null;
 
         if (is_iterable($pipeline)) {
+            /** @phpstan-ignore-next-line return.type */
             return [$pipeline, $params];
         }
 

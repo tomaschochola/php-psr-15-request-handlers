@@ -15,10 +15,8 @@ declare(strict_types=1);
 
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
-use ArrayIterator;
 use ArrayObject;
 use Iterator;
-use IteratorIterator;
 use NoDiscard;
 use Override;
 use Psr\Container\ContainerInterface;
@@ -67,7 +65,7 @@ readonly class RouteRequestHandler implements RequestHandlerInterface
     }
 
     /**
-     * @return Traversable<mixed, class-string<MiddlewareInterface|RequestHandlerInterface>>
+     * @return Traversable<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>
      */
     #[NoDiscard]
     protected function after(ServerRequestInterface $request): Traversable
@@ -76,7 +74,7 @@ readonly class RouteRequestHandler implements RequestHandlerInterface
     }
 
     /**
-     * @return Traversable<mixed, class-string<MiddlewareInterface|RequestHandlerInterface>>
+     * @return Traversable<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>
      */
     #[NoDiscard]
     protected function before(ServerRequestInterface $request): Traversable
@@ -86,6 +84,11 @@ readonly class RouteRequestHandler implements RequestHandlerInterface
         yield ErrorHandlerMiddleware::class;
     }
 
+    /**
+     * @param iterable<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>> $match
+     *
+     * @return Iterator<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>
+     */
     #[NoDiscard]
     protected function pipeline(ServerRequestInterface $request, iterable $match): Iterator
     {

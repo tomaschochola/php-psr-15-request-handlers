@@ -31,7 +31,7 @@ readonly class RouteSettings implements RouteSettingsInterface
     public readonly array $trie;
 
     /**
-     * @param array<mixed, list<class-string<MiddlewareInterface|RequestHandlerInterface>>> $exact
+     * @param array<mixed, list<class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>> $exact
      * @param array<mixed, mixed> $trie
      */
     public function __construct(array $exact, array $trie)

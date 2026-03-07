@@ -34,11 +34,13 @@ use function str_contains;
 
 /**
  * @no-named-arguments
+ *
+ * @implements IteratorAggregate<mixed, mixed>
  */
 readonly class RouteManifest implements IteratorAggregate
 {
     /**
-     * @var AppendIterator<string, list<class-string<MiddlewareInterface|RequestHandlerInterface>>, Iterator<string, list<class-string<MiddlewareInterface|RequestHandlerInterface>>>>
+     * @var AppendIterator<string, list<class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>, Iterator<string, list<class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>>>
      */
     protected readonly AppendIterator $exact;
 
@@ -68,7 +70,7 @@ readonly class RouteManifest implements IteratorAggregate
 
     /**
      * @param iterable<mixed, string> $methods
-     * @param iterable<mixed, class-string<MiddlewareInterface|RequestHandlerInterface>> $pipeline
+     * @param iterable<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>> $pipeline
      */
     public function route(iterable $methods, string $path, iterable $pipeline): void
     {
@@ -82,7 +84,7 @@ readonly class RouteManifest implements IteratorAggregate
     }
 
     /**
-     * @param iterable<mixed, class-string<MiddlewareInterface|RequestHandlerInterface>> $pipeline
+     * @param iterable<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>> $pipeline
      */
     protected function exact(string $method, string $path, iterable $pipeline): void
     {
@@ -90,7 +92,7 @@ readonly class RouteManifest implements IteratorAggregate
     }
 
     /**
-     * @param iterable<mixed, class-string<MiddlewareInterface|RequestHandlerInterface>> $pipeline
+     * @param iterable<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>> $pipeline
      */
     protected function trie(string $method, string $path, iterable $pipeline): void
     {

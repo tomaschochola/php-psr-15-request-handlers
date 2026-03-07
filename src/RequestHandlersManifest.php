@@ -15,16 +15,17 @@ declare(strict_types=1);
 
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
+use IteratorAggregate;
 use NoDiscard;
 use Override;
-use IteratorAggregate;
-use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use TomasChochola\Psr\Container\CallableCargo;
 use Traversable;
 
 /**
  * @no-named-arguments
+ *
+ * @implements IteratorAggregate<mixed, mixed>
  */
 readonly class RequestHandlersManifest implements IteratorAggregate
 {

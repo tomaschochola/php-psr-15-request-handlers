@@ -24,7 +24,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 interface RouteSettingsInterface
 {
     /**
-     * @var array<mixed, list<class-string<MiddlewareInterface|RequestHandlerInterface>>>
+     * @var array<mixed, list<class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>>
      */
     public array $exact { get; }
 

@@ -15,7 +15,7 @@ declare(strict_types=1);
 
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
-use EmptyIterator;
+use ArrayIterator;
 use Iterator;
 use LogicException;
 use NoDiscard;
@@ -26,8 +26,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-use function assert;
-
 /**
  * @no-named-arguments
  */
@@ -35,12 +33,15 @@ readonly class PipelineRequestHandler implements RequestHandlerInterface
 {
     protected readonly ContainerInterface $container;
 
+    /**
+     * @var Iterator<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>
+     */
     protected readonly Iterator $pipeline;
 
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-        $this->pipeline = new EmptyIterator();
+        $this->pipeline = new ArrayIterator();
     }
 
     #[NoDiscard]
@@ -59,6 +60,7 @@ readonly class PipelineRequestHandler implements RequestHandlerInterface
 
         $current = $this->pipeline->current();
 
+        // @phpstan-ignore-next-line deadCode.unreachable
         $this->pipeline->next();
 
         $instance = $this->container->get($current);
@@ -74,6 +76,9 @@ readonly class PipelineRequestHandler implements RequestHandlerInterface
         throw new LogicException('never');
     }
 
+    /**
+     * @param Iterator<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>> $pipeline
+     */
     public function withPipeline(Iterator $pipeline): static
     {
         return clone ($this, [
