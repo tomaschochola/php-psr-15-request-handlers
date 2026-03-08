@@ -78,7 +78,7 @@ readonly class ResponseEmitter
         $from = $body->detach();
 
         if (!is_resource($from)) {
-            throw new UnexpectedValueException('detach');
+            throw new UnexpectedValueException($body::class . '->detach');
         }
 
         stream_copy_to_stream($from, $to);

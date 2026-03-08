@@ -23,7 +23,6 @@ use NoDiscard;
 use Override;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use TomasChochola\Psr\Container\MixedCargo;
 use Traversable;
 
 use function array_replace_recursive;
@@ -65,7 +64,7 @@ readonly class RouteManifest implements IteratorAggregate
             $trie = array_replace_recursive($trie, [$method => $node]);
         }
 
-        yield RouteSettingsInterface::class => new MixedCargo(new RouteSettings(iterator_to_array($this->exact), $trie));
+        yield RouteSettingsInterface::class => new RouteSettings(iterator_to_array($this->exact), $trie);
     }
 
     /**

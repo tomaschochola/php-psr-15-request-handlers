@@ -19,7 +19,6 @@ use IteratorAggregate;
 use NoDiscard;
 use Override;
 use Psr\Http\Server\RequestHandlerInterface;
-use TomasChochola\Psr\Container\CallableCargo;
 use Traversable;
 
 /**
@@ -33,42 +32,42 @@ readonly class RequestHandlersManifest implements IteratorAggregate
     #[Override]
     public function getIterator(): Traversable
     {
-        yield ErrorHandlerMiddleware::class => new CallableCargo([ErrorHandlerMiddleware::class, 'unload']);
+        yield ErrorHandlerMiddleware::class => [ErrorHandlerMiddleware::class, 'unload'];
 
-        yield ExceptionHandlerMiddleware::class => new CallableCargo([ExceptionHandlerMiddleware::class, 'unload']);
+        yield ExceptionHandlerMiddleware::class => [ExceptionHandlerMiddleware::class, 'unload'];
 
-        yield JsonEncoder::class => new CallableCargo([JsonEncoder::class, 'unload']);
+        yield JsonEncoder::class => [JsonEncoder::class, 'unload'];
 
-        yield JsonResponseForge::class => new CallableCargo([JsonResponseForge::class, 'unload']);
+        yield JsonResponseForge::class => [JsonResponseForge::class, 'unload'];
 
-        yield NoContentRequestHandler::class => new CallableCargo([NoContentRequestHandler::class, 'unload']);
+        yield NoContentRequestHandler::class => [NoContentRequestHandler::class, 'unload'];
 
-        yield NotFoundRequestHandler::class => new CallableCargo([NotFoundRequestHandler::class, 'unload']);
+        yield NotFoundRequestHandler::class => [NotFoundRequestHandler::class, 'unload'];
 
-        yield NullMiddleware::class => new CallableCargo([NullMiddleware::class, 'unload']);
+        yield NullMiddleware::class => [NullMiddleware::class, 'unload'];
 
-        yield OkRequestHandler::class => new CallableCargo([OkRequestHandler::class, 'unload']);
+        yield OkRequestHandler::class => [OkRequestHandler::class, 'unload'];
 
-        yield PipelineRequestHandler::class => new CallableCargo([PipelineRequestHandler::class, 'unload']);
+        yield PipelineRequestHandler::class => [PipelineRequestHandler::class, 'unload'];
 
-        yield ResponseEmitter::class => new CallableCargo([ResponseEmitter::class, 'unload']);
+        yield ResponseEmitter::class => [ResponseEmitter::class, 'unload'];
 
-        yield ResponseExiter::class => new CallableCargo([ResponseExiter::class, 'unload']);
+        yield ResponseExiter::class => [ResponseExiter::class, 'unload'];
 
-        yield RouteRequestHandler::class => new CallableCargo([RouteRequestHandler::class, 'unload']);
+        yield RouteRequestHandler::class => [RouteRequestHandler::class, 'unload'];
 
-        yield RequestHandlerInterface::class => new CallableCargo([RouteRequestHandler::class, 'unload']);
+        yield RequestHandlerInterface::class => [RouteRequestHandler::class, 'unload'];
 
-        yield RouteMatcher::class => new CallableCargo([RouteMatcher::class, 'unload']);
+        yield RouteMatcher::class => [RouteMatcher::class, 'unload'];
 
-        yield StreamWriter::class => new CallableCargo([StreamWriter::class, 'unload']);
+        yield StreamWriter::class => [StreamWriter::class, 'unload'];
 
-        yield WithRequestCookiesMiddleware::class => new CallableCargo([WithRequestCookiesMiddleware::class, 'unload']);
+        yield WithRequestCookiesMiddleware::class => [WithRequestCookiesMiddleware::class, 'unload'];
 
-        yield WithRequestHeadersMiddleware::class => new CallableCargo([WithRequestHeadersMiddleware::class, 'unload']);
+        yield WithRequestHeadersMiddleware::class => [WithRequestHeadersMiddleware::class, 'unload'];
 
-        yield WithRequestPayloadMiddleware::class => new CallableCargo([WithRequestPayloadMiddleware::class, 'unload']);
+        yield WithRequestPayloadMiddleware::class => [WithRequestPayloadMiddleware::class, 'unload'];
 
-        yield WithRequestQueryMiddleware::class => new CallableCargo([WithRequestQueryMiddleware::class, 'unload']);
+        yield WithRequestQueryMiddleware::class => [WithRequestQueryMiddleware::class, 'unload'];
     }
 }
