@@ -25,7 +25,7 @@ use function assert;
 /**
  * @no-named-arguments
  */
-readonly class JsonResponseForge
+readonly class JsonResponseFactory
 {
     protected readonly JsonEncoder $jsonEncoder;
 

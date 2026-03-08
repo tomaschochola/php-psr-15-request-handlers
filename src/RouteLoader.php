@@ -36,7 +36,7 @@ use function str_contains;
  *
  * @implements IteratorAggregate<mixed, mixed>
  */
-readonly class RouteManifest implements IteratorAggregate
+readonly class RouteLoader implements IteratorAggregate
 {
     /**
      * @var AppendIterator<string, list<class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>, Iterator<string, list<class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>>>

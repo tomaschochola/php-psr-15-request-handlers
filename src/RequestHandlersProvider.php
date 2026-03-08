@@ -26,48 +26,30 @@ use Traversable;
  *
  * @implements IteratorAggregate<mixed, mixed>
  */
-readonly class RequestHandlersManifest implements IteratorAggregate
+readonly class RequestHandlersProvider implements IteratorAggregate
 {
     #[NoDiscard]
     #[Override]
     public function getIterator(): Traversable
     {
         yield ErrorHandlerMiddleware::class => [ErrorHandlerMiddleware::class, 'unload'];
-
         yield ExceptionHandlerMiddleware::class => [ExceptionHandlerMiddleware::class, 'unload'];
-
         yield JsonEncoder::class => [JsonEncoder::class, 'unload'];
-
-        yield JsonResponseForge::class => [JsonResponseForge::class, 'unload'];
-
+        yield JsonResponseFactory::class => [JsonResponseFactory::class, 'unload'];
         yield NoContentRequestHandler::class => [NoContentRequestHandler::class, 'unload'];
-
         yield NotFoundRequestHandler::class => [NotFoundRequestHandler::class, 'unload'];
-
         yield NullMiddleware::class => [NullMiddleware::class, 'unload'];
-
         yield OkRequestHandler::class => [OkRequestHandler::class, 'unload'];
-
         yield PipelineRequestHandler::class => [PipelineRequestHandler::class, 'unload'];
-
         yield ResponseEmitter::class => [ResponseEmitter::class, 'unload'];
-
         yield ResponseExiter::class => [ResponseExiter::class, 'unload'];
-
         yield RouteRequestHandler::class => [RouteRequestHandler::class, 'unload'];
-
         yield RequestHandlerInterface::class => [RouteRequestHandler::class, 'unload'];
-
         yield RouteMatcher::class => [RouteMatcher::class, 'unload'];
-
         yield StreamWriter::class => [StreamWriter::class, 'unload'];
-
         yield WithRequestCookiesMiddleware::class => [WithRequestCookiesMiddleware::class, 'unload'];
-
         yield WithRequestHeadersMiddleware::class => [WithRequestHeadersMiddleware::class, 'unload'];
-
         yield WithRequestPayloadMiddleware::class => [WithRequestPayloadMiddleware::class, 'unload'];
-
         yield WithRequestQueryMiddleware::class => [WithRequestQueryMiddleware::class, 'unload'];
     }
 }

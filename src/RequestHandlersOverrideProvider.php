@@ -25,7 +25,7 @@ use Traversable;
  *
  * @implements IteratorAggregate<mixed, mixed>
  */
-readonly class RequestHandlersOverrideManifest implements IteratorAggregate
+readonly class RequestHandlersOverrideProvider implements IteratorAggregate
 {
     #[NoDiscard]
     #[Override]
