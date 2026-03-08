@@ -27,31 +27,26 @@ use function assert;
  */
 readonly class JsonResponseFactory
 {
-    protected readonly JsonEncoder $jsonEncoder;
+    protected readonly JsonWriter $jsonWriter;
 
     protected readonly ResponseFactoryInterface $responseFactory;
 
-    protected readonly StreamWriter $streamWriter;
-
-    public function __construct(JsonEncoder $jsonEncoder, StreamWriter $streamWriter, ResponseFactoryInterface $responseFactory)
+    public function __construct(JsonWriter $jsonWriter, ResponseFactoryInterface $responseFactory)
     {
-        $this->jsonEncoder = $jsonEncoder;
-        $this->streamWriter = $streamWriter;
+        $this->jsonWriter = $jsonWriter;
         $this->responseFactory = $responseFactory;
     }
 
     #[NoDiscard]
     public static function unload(ContainerInterface $container): self
     {
-        $jsonEncoder = $container->get(JsonEncoder::class);
-        $streamWriter = $container->get(StreamWriter::class);
+        $jsonWriter = $container->get(JsonWriter::class);
         $responseFactory = $container->get(ResponseFactoryInterface::class);
 
-        assert($jsonEncoder instanceof JsonEncoder);
-        assert($streamWriter instanceof StreamWriter);
+        assert($jsonWriter instanceof JsonWriter);
         assert($responseFactory instanceof ResponseFactoryInterface);
 
-        return new self($jsonEncoder, $streamWriter, $responseFactory);
+        return new self($jsonWriter, $responseFactory);
     }
 
     #[NoDiscard]
@@ -59,8 +54,8 @@ readonly class JsonResponseFactory
     {
         $response = $this->responseFactory->createResponse($code, $reasonPhrase);
 
-        $this->streamWriter->write($response->getBody(), $this->jsonEncoder->encode($data));
+        $response = $this->jsonWriter->write($response, $data);
 
-        return $response->withHeader('Content-Type', 'application/json; charset=utf-8');
+        return $response;
     }
 }

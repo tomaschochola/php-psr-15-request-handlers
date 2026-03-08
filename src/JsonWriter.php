@@ -17,8 +17,10 @@ namespace TomasChochola\Psr\Http\RequestHandlers;
 
 use NoDiscard;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\MessageInterface;
 use UnexpectedValueException;
 
+use function assert;
 use function is_string;
 use function json_encode;
 
@@ -31,12 +33,23 @@ use const JSON_UNESCAPED_UNICODE;
 /**
  * @no-named-arguments
  */
-readonly class JsonEncoder
+readonly class JsonWriter
 {
+    protected readonly StreamWriter $streamWriter;
+
+    public function __construct(StreamWriter $streamWriter)
+    {
+        $this->streamWriter = $streamWriter;
+    }
+
     #[NoDiscard]
     public static function unload(ContainerInterface $container): self
     {
-        return new self();
+        $streamWriter = $container->get(StreamWriter::class);
+
+        assert($streamWriter instanceof StreamWriter);
+
+        return new self($streamWriter);
     }
 
     #[NoDiscard]
@@ -49,5 +62,13 @@ readonly class JsonEncoder
         }
 
         return $encoded;
+    }
+
+    #[NoDiscard]
+    public function write(MessageInterface $message, mixed $data): MessageInterface
+    {
+        $this->streamWriter->write($message->getBody(), $this->encode($data));
+
+        return $message->withHeader('Content-Type', 'application/json; charset=utf-8');
     }
 }

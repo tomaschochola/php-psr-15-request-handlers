@@ -34,7 +34,7 @@ readonly class RequestHandlersProvider implements IteratorAggregate
     {
         yield ErrorHandlerMiddleware::class => [ErrorHandlerMiddleware::class, 'unload'];
         yield ExceptionHandlerMiddleware::class => [ExceptionHandlerMiddleware::class, 'unload'];
-        yield JsonEncoder::class => [JsonEncoder::class, 'unload'];
+        yield JsonWriter::class => [JsonWriter::class, 'unload'];
         yield JsonResponseFactory::class => [JsonResponseFactory::class, 'unload'];
         yield NoContentRequestHandler::class => [NoContentRequestHandler::class, 'unload'];
         yield NotFoundRequestHandler::class => [NotFoundRequestHandler::class, 'unload'];
