@@ -25,12 +25,12 @@ use Traversable;
  *
  * @implements IteratorAggregate<mixed, mixed>
  */
-readonly class RequestHandlersOverrideProvider implements IteratorAggregate
+readonly class RequestHandlersTestingManifest implements IteratorAggregate
 {
     #[NoDiscard]
     #[Override]
     public function getIterator(): Traversable
     {
-        yield ErrorHandlerMiddleware::class => [NullMiddleware::class, 'unload'];
+        yield ErrorHandlerMiddleware::class => new NullMiddleware();
     }
 }

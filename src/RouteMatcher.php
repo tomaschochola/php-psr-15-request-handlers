@@ -16,12 +16,10 @@ declare(strict_types=1);
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
 use NoDiscard;
-use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-use function assert;
 use function explode;
 use function is_array;
 use function is_iterable;
@@ -31,21 +29,11 @@ use function is_iterable;
  */
 readonly class RouteMatcher
 {
-    protected readonly RouteSettingsInterface $registry;
+    private readonly RouteSettingsInterface $registry;
 
     public function __construct(RouteSettingsInterface $registry)
     {
         $this->registry = $registry;
-    }
-
-    #[NoDiscard]
-    public static function unload(ContainerInterface $container): self
-    {
-        $registry = $container->get(RouteSettingsInterface::class);
-
-        assert($registry instanceof RouteSettingsInterface);
-
-        return new self($registry);
     }
 
     /**

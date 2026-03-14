@@ -41,12 +41,12 @@ readonly class RouteLoader implements IteratorAggregate
     /**
      * @var AppendIterator<string, list<class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>, Iterator<string, list<class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>>>
      */
-    protected readonly AppendIterator $exact;
+    private readonly AppendIterator $exact;
 
     /**
      * @var AppendIterator<string, array<mixed, mixed>, Iterator<string, array<mixed, mixed>>>
      */
-    protected readonly AppendIterator $trie;
+    private readonly AppendIterator $trie;
 
     public function __construct()
     {
@@ -85,7 +85,7 @@ readonly class RouteLoader implements IteratorAggregate
     /**
      * @param iterable<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>> $pipeline
      */
-    protected function exact(string $method, string $path, iterable $pipeline): void
+    private function exact(string $method, string $path, iterable $pipeline): void
     {
         $this->exact->append(new ArrayIterator(["{$method} {$path}" => iterator_to_array($pipeline, false)]));
     }
@@ -93,7 +93,7 @@ readonly class RouteLoader implements IteratorAggregate
     /**
      * @param iterable<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>> $pipeline
      */
-    protected function trie(string $method, string $path, iterable $pipeline): void
+    private function trie(string $method, string $path, iterable $pipeline): void
     {
         $trie = ['#' => iterator_to_array($pipeline, false)];
 

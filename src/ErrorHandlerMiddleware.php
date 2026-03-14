@@ -18,7 +18,6 @@ namespace TomasChochola\Psr\Http\RequestHandlers;
 use ErrorException;
 use NoDiscard;
 use Override;
-use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -32,12 +31,6 @@ use function set_error_handler;
  */
 readonly class ErrorHandlerMiddleware implements MiddlewareInterface
 {
-    #[NoDiscard]
-    public static function unload(ContainerInterface $container): self
-    {
-        return new self();
-    }
-
     #[NoDiscard]
     #[Override]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface

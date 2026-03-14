@@ -31,23 +31,17 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 readonly class PipelineRequestHandler implements RequestHandlerInterface
 {
-    protected readonly ContainerInterface $container;
+    private readonly ContainerInterface $container;
 
     /**
      * @var Iterator<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>
      */
-    protected readonly Iterator $pipeline;
+    private readonly Iterator $pipeline;
 
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
         $this->pipeline = new ArrayIterator();
-    }
-
-    #[NoDiscard]
-    public static function unload(ContainerInterface $container): self
-    {
-        return new self($container);
     }
 
     #[NoDiscard]
@@ -79,6 +73,7 @@ readonly class PipelineRequestHandler implements RequestHandlerInterface
     /**
      * @param Iterator<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>> $pipeline
      */
+    #[NoDiscard]
     public function withPipeline(Iterator $pipeline): static
     {
         return clone ($this, [

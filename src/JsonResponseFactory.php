@@ -16,37 +16,22 @@ declare(strict_types=1);
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
 use NoDiscard;
-use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
-
-use function assert;
 
 /**
  * @no-named-arguments
  */
 readonly class JsonResponseFactory
 {
-    protected readonly JsonWriter $jsonWriter;
+    private readonly JsonWriter $jsonWriter;
 
-    protected readonly ResponseFactoryInterface $responseFactory;
+    private readonly ResponseFactoryInterface $responseFactory;
 
     public function __construct(JsonWriter $jsonWriter, ResponseFactoryInterface $responseFactory)
     {
         $this->jsonWriter = $jsonWriter;
         $this->responseFactory = $responseFactory;
-    }
-
-    #[NoDiscard]
-    public static function unload(ContainerInterface $container): self
-    {
-        $jsonWriter = $container->get(JsonWriter::class);
-        $responseFactory = $container->get(ResponseFactoryInterface::class);
-
-        assert($jsonWriter instanceof JsonWriter);
-        assert($responseFactory instanceof ResponseFactoryInterface);
-
-        return new self($jsonWriter, $responseFactory);
     }
 
     #[NoDiscard]

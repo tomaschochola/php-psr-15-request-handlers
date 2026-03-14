@@ -17,7 +17,6 @@ namespace TomasChochola\Psr\Http\RequestHandlers;
 
 use NoDiscard;
 use Override;
-use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -25,28 +24,16 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Throwable;
 
-use function assert;
-
 /**
  * @no-named-arguments
  */
 readonly class ExceptionHandlerMiddleware implements MiddlewareInterface
 {
-    protected readonly ResponseFactoryInterface $responseFactory;
+    private readonly ResponseFactoryInterface $responseFactory;
 
     public function __construct(ResponseFactoryInterface $responseFactory)
     {
         $this->responseFactory = $responseFactory;
-    }
-
-    #[NoDiscard]
-    public static function unload(ContainerInterface $container): self
-    {
-        $responseFactory = $container->get(ResponseFactoryInterface::class);
-
-        assert($responseFactory instanceof ResponseFactoryInterface);
-
-        return new self($responseFactory);
     }
 
     #[NoDiscard]

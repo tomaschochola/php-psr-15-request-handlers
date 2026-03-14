@@ -16,11 +16,9 @@ declare(strict_types=1);
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
 use NoDiscard;
-use Psr\Container\ContainerInterface;
 use Psr\Http\Message\MessageInterface;
 use UnexpectedValueException;
 
-use function assert;
 use function is_string;
 use function json_encode;
 
@@ -35,21 +33,11 @@ use const JSON_UNESCAPED_UNICODE;
  */
 readonly class JsonWriter
 {
-    protected readonly StreamWriter $streamWriter;
+    private readonly StreamWriter $streamWriter;
 
     public function __construct(StreamWriter $streamWriter)
     {
         $this->streamWriter = $streamWriter;
-    }
-
-    #[NoDiscard]
-    public static function unload(ContainerInterface $container): self
-    {
-        $streamWriter = $container->get(StreamWriter::class);
-
-        assert($streamWriter instanceof StreamWriter);
-
-        return new self($streamWriter);
     }
 
     #[NoDiscard]
