@@ -16,31 +16,46 @@ declare(strict_types=1);
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
 use NoDiscard;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+
+use function assert;
 
 use function explode;
 use function is_array;
 use function is_iterable;
 
 /**
+ * @internal
+ *
  * @no-named-arguments
  */
 readonly class RouteMatcher
 {
-    private readonly RouteSettingsInterface $registry;
+    #[NoDiscard]
+    public static function inject(ContainerInterface $container): self
+    {
+        $registry = $container->get(RouteSettings::class);
 
-    public function __construct(RouteSettingsInterface $registry)
+        assert($registry instanceof RouteSettings);
+
+        return new self($registry);
+    }
+
+    private readonly RouteSettings $registry;
+
+    public function __construct(RouteSettings $registry)
     {
         $this->registry = $registry;
     }
 
     /**
-     * @return array{0: iterable<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>, 1: list<string>}
+     * @return RouteMatch
      */
     #[NoDiscard]
-    public function route(ServerRequestInterface $request): array
+    public function match(ServerRequestInterface $request): RouteMatch
     {
         $method = $request->getMethod();
         $path = $request->getUri()->getPath();
@@ -48,13 +63,13 @@ readonly class RouteMatcher
         $exact = $this->registry->exact["{$method} {$path}"] ?? null;
 
         if (is_iterable($exact)) {
-            return [$exact, []];
+            return new RouteMatch($exact, new RouteParams([]));
         }
 
         $trie = $this->registry->trie[$method] ?? null;
 
         if (!is_array($trie)) {
-            return [[], []];
+            return new RouteMatch([], new RouteParams([]));
         }
 
         $node = $trie;
@@ -83,16 +98,15 @@ readonly class RouteMatcher
                 continue;
             }
 
-            return [[], []];
+            return new RouteMatch([], new RouteParams([]));
         }
 
         $pipeline = $node['#'] ?? null;
 
         if (is_iterable($pipeline)) {
-            /** @phpstan-ignore-next-line return.type */
-            return [$pipeline, $params];
+            return new RouteMatch($pipeline, new RouteParams($params));
         }
 
-        return [[], []];
+        return new RouteMatch([], new RouteParams([]));
     }
 }

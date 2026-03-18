@@ -15,41 +15,43 @@ declare(strict_types=1);
 
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
-use ErrorException;
+use Iterator;
 use NoDiscard;
 use Override;
 use Psr\Container\ContainerInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-use function restore_error_handler;
-use function set_error_handler;
-
 /**
+ * @internal
+ *
  * @no-named-arguments
  */
-readonly class ErrorHandlerMiddleware implements MiddlewareInterface
+readonly class PipelineResolver
 {
     #[NoDiscard]
     public static function inject(ContainerInterface $container): self
     {
-        return new self();
+        return new self($container);
     }
 
-    #[NoDiscard]
-    #[Override]
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
-    {
-        set_error_handler(static function (int $severity, string $message, string $file, int $line): never {
-            throw new ErrorException($message, 0, $severity, $file, $line);
-        });
+    private readonly ContainerInterface $container;
 
-        try {
-            return $handler->handle($request);
-        } finally {
-            restore_error_handler();
+    public function __construct(ContainerInterface $container)
+    {
+        $this->container = $container;
+    }
+
+    /**
+     * @param iterable<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>> $pipeline
+     *
+     * @return Iterator<mixed, MiddlewareInterface|RequestHandlerInterface>
+     */
+    #[NoDiscard]
+    public function resolve(iterable $pipeline): Iterator
+    {
+        foreach ($pipeline as $class) {
+            yield $this->container->get($class);
         }
     }
 }

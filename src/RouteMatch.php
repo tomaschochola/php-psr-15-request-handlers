@@ -15,22 +15,21 @@ declare(strict_types=1);
 
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
-use IteratorAggregate;
-use NoDiscard;
-use Override;
-use Traversable;
+use Iterator;
 
 /**
- * @no-named-arguments
+ * @internal
  *
- * @implements IteratorAggregate<mixed, mixed>
+ * @no-named-arguments
  */
-readonly class RequestHandlersTestingManifest implements IteratorAggregate
+readonly class RouteMatch
 {
-    #[NoDiscard]
-    #[Override]
-    public function getIterator(): Traversable
-    {
-        yield ErrorHandlerMiddleware::class => new NullMiddleware();
+    /**
+     * @param iterable<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>> $pipeline
+     */
+    public function __construct(
+        public readonly iterable $pipeline,
+        public readonly RouteParams $params,
+    ) {
     }
 }

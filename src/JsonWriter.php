@@ -16,17 +16,10 @@ declare(strict_types=1);
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
 use NoDiscard;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\MessageInterface;
-use UnexpectedValueException;
 
-use function is_string;
-use function json_encode;
-
-use const JSON_INVALID_UTF8_SUBSTITUTE;
-use const JSON_PRESERVE_ZERO_FRACTION;
-use const JSON_THROW_ON_ERROR;
-use const JSON_UNESCAPED_SLASHES;
-use const JSON_UNESCAPED_UNICODE;
+use function assert;
 
 /**
  * @no-named-arguments
@@ -35,27 +28,30 @@ readonly class JsonWriter
 {
     private readonly StreamWriter $streamWriter;
 
-    public function __construct(StreamWriter $streamWriter)
-    {
-        $this->streamWriter = $streamWriter;
-    }
+    private readonly JsonEncoder $jsonEncoder;
 
     #[NoDiscard]
-    public function encode(mixed $data): string
+    public static function inject(ContainerInterface $container): self
     {
-        $encoded = json_encode($data, JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE | JSON_PRESERVE_ZERO_FRACTION | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        $streamWriter = $container->get(StreamWriter::class);
+        $jsonEncoder = $container->get(JsonEncoder::class);
 
-        if (!is_string($encoded)) {
-            throw new UnexpectedValueException('json_encode');
-        }
+        assert($streamWriter instanceof StreamWriter);
+        assert($jsonEncoder instanceof JsonEncoder);
 
-        return $encoded;
+        return new self($streamWriter, $jsonEncoder);
+    }
+
+    public function __construct(StreamWriter $streamWriter, JsonEncoder $jsonEncoder)
+    {
+        $this->streamWriter = $streamWriter;
+        $this->jsonEncoder = $jsonEncoder;
     }
 
     #[NoDiscard]
     public function write(MessageInterface $message, mixed $data): MessageInterface
     {
-        $this->streamWriter->write($message->getBody(), $this->encode($data));
+        $this->streamWriter->write($message->getBody(), $this->jsonEncoder->encode($data));
 
         return $message->withHeader('Content-Type', 'application/json; charset=utf-8');
     }

@@ -64,7 +64,7 @@ readonly class RouteLoader implements IteratorAggregate
             $trie = array_replace_recursive($trie, [$method => $node]);
         }
 
-        yield RouteSettingsInterface::class => new RouteSettings(iterator_to_array($this->exact), $trie);
+        yield RouteSettings::class => new RouteSettings(iterator_to_array($this->exact), $trie);
     }
 
     /**

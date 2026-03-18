@@ -15,36 +15,28 @@ declare(strict_types=1);
 
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
-use ArrayIterator;
 use Iterator;
 use LogicException;
-use NoDiscard;
 use Override;
-use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
+ * @internal
+ *
  * @no-named-arguments
  */
-readonly class PipelineRequestHandler implements RequestHandlerInterface
+readonly class PipelineRunner implements RequestHandlerInterface
 {
-    private readonly ContainerInterface $container;
-
     /**
-     * @var Iterator<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>
+     * @param Iterator<mixed, MiddlewareInterface|RequestHandlerInterface> $pipeline
      */
-    private readonly Iterator $pipeline;
-
-    public function __construct(ContainerInterface $container)
+    public function __construct(private readonly Iterator $pipeline)
     {
-        $this->container = $container;
-        $this->pipeline = new ArrayIterator();
     }
 
-    #[NoDiscard]
     #[Override]
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
@@ -57,27 +49,14 @@ readonly class PipelineRequestHandler implements RequestHandlerInterface
         // @phpstan-ignore-next-line deadCode.unreachable
         $this->pipeline->next();
 
-        $instance = $this->container->get($current);
-
-        if ($instance instanceof MiddlewareInterface) {
-            return $instance->process($request, $this);
+        if ($current instanceof MiddlewareInterface) {
+            return $current->process($request, $this);
         }
 
-        if ($instance instanceof RequestHandlerInterface) {
-            return $instance->handle($request);
+        if ($current instanceof RequestHandlerInterface) {
+            return $current->handle($request);
         }
 
         throw new LogicException('never');
-    }
-
-    /**
-     * @param Iterator<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>> $pipeline
-     */
-    #[NoDiscard]
-    public function withPipeline(Iterator $pipeline): static
-    {
-        return clone ($this, [
-            'pipeline' => $pipeline,
-        ]);
     }
 }

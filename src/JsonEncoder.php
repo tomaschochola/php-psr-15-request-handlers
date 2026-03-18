@@ -17,15 +17,22 @@ namespace TomasChochola\Psr\Http\RequestHandlers;
 
 use NoDiscard;
 use Psr\Container\ContainerInterface;
-use Psr\Http\Message\StreamInterface;
 use UnexpectedValueException;
 
-use function mb_strlen;
+use function assert;
+use function is_string;
+use function json_encode;
+
+use const JSON_INVALID_UTF8_SUBSTITUTE;
+use const JSON_PRESERVE_ZERO_FRACTION;
+use const JSON_THROW_ON_ERROR;
+use const JSON_UNESCAPED_SLASHES;
+use const JSON_UNESCAPED_UNICODE;
 
 /**
  * @no-named-arguments
  */
-readonly class StreamWriter
+readonly class JsonEncoder
 {
     #[NoDiscard]
     public static function inject(ContainerInterface $container): self
@@ -33,12 +40,19 @@ readonly class StreamWriter
         return new self();
     }
 
-    public function write(StreamInterface $stream, string $data): void
+    public function __construct()
     {
-        $written = $stream->write($data);
+    }
 
-        if ($written !== mb_strlen($data, '8bit')) {
-            throw new UnexpectedValueException($stream::class . '->write');
+    #[NoDiscard]
+    public function encode(mixed $data): string
+    {
+        $encoded = json_encode($data, JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE | JSON_PRESERVE_ZERO_FRACTION | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        if (!is_string($encoded)) {
+            throw new UnexpectedValueException('json_encode');
         }
+
+        return $encoded;
     }
 }

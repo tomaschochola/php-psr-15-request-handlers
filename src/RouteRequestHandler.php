@@ -15,38 +15,51 @@ declare(strict_types=1);
 
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
-use ArrayObject;
-use Iterator;
 use NoDiscard;
 use Override;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Traversable;
 
+use function assert;
+
 /**
  * @no-named-arguments
  */
 readonly class RouteRequestHandler implements RequestHandlerInterface
 {
-    private readonly RouteMatcher $deregistrator;
-
-    private readonly PipelineRequestHandler $runner;
-
-    public function __construct(RouteMatcher $deregistrator, PipelineRequestHandler $runner)
+    #[NoDiscard]
+    public static function inject(ContainerInterface $container): self
     {
-        $this->deregistrator = $deregistrator;
-        $this->runner = $runner;
+        $matcher = $container->get(RouteMatcher::class);
+        $resolver = $container->get(PipelineResolver::class);
+
+        assert($matcher instanceof RouteMatcher);
+        assert($resolver instanceof PipelineResolver);
+
+        return new self($matcher, $resolver);
+    }
+
+    private readonly RouteMatcher $matcher;
+
+    private readonly PipelineResolver $resolver;
+
+    public function __construct(RouteMatcher $matcher, PipelineResolver $resolver)
+    {
+        $this->matcher = $matcher;
+        $this->resolver = $resolver;
     }
 
     #[NoDiscard]
     #[Override]
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        [$pipeline, $params] = $this->deregistrator->route($request);
+        $match = $this->matcher->match($request);
 
-        return $this->runner->withPipeline($this->pipeline($request, $pipeline))->handle($request->withAttribute(ArrayObject::class, new ArrayObject($params)));
+        return new PipelineRunner($this->resolver->resolve($this->pipeline($request, $match)))->handle($request->withAttribute(RouteParams::class, $match->params));
     }
 
     /**
@@ -70,17 +83,13 @@ readonly class RouteRequestHandler implements RequestHandlerInterface
     }
 
     /**
-     * @param iterable<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>> $match
-     *
-     * @return Iterator<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>
+     * @return iterable<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>
      */
     #[NoDiscard]
-    private function pipeline(ServerRequestInterface $request, iterable $match): Iterator
+    private function pipeline(ServerRequestInterface $request, RouteMatch $match): iterable
     {
         yield from $this->before($request);
-
-        yield from $match;
-
+        yield from $match->pipeline;
         yield from $this->after($request);
     }
 }

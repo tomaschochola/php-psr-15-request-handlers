@@ -17,6 +17,7 @@ namespace TomasChochola\Psr\Http\RequestHandlers;
 
 use LogicException;
 use NoDiscard;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use UnexpectedValueException;
 
@@ -34,7 +35,13 @@ use function stream_copy_to_stream;
  */
 readonly class ResponseEmitter
 {
-    public function emit(ResponseInterface $response): void
+    #[NoDiscard]
+    public static function inject(ContainerInterface $container): self
+    {
+        return new self();
+    }
+
+    public function emit(ResponseInterface $response): never
     {
         if (headers_sent()) {
             throw new LogicException('headers_sent');
