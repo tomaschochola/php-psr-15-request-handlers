@@ -75,12 +75,12 @@ readonly class RouteParams implements ArrayAccess, IteratorAggregate
     #[Override]
     public function offsetSet(mixed $offset, mixed $value): never
     {
-        throw new LogicException('RouteParams is readonly');
+        throw new LogicException('never');
     }
 
     #[Override]
     public function offsetUnset(mixed $offset): never
     {
-        throw new LogicException('RouteParams is readonly');
+        throw new LogicException('never');
     }
 }
