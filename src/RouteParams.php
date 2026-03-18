@@ -31,10 +31,16 @@ use function array_key_exists;
 readonly class RouteParams implements IteratorAggregate, \ArrayAccess
 {
     /**
+     * @var list<string>
+     */
+    public readonly array $params;
+
+    /**
      * @param list<string> $params
      */
-    public function __construct(public readonly array $params)
+    public function __construct(array $params)
     {
+        $this->params = $params;
     }
 
     #[Override]

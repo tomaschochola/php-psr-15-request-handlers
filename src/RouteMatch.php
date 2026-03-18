@@ -25,11 +25,18 @@ use Iterator;
 readonly class RouteMatch
 {
     /**
+     * @var iterable<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>
+     */
+    public readonly iterable $pipeline;
+
+    public readonly RouteParams $params;
+
+    /**
      * @param iterable<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>> $pipeline
      */
-    public function __construct(
-        public readonly iterable $pipeline,
-        public readonly RouteParams $params,
-    ) {
+    public function __construct(iterable $pipeline, RouteParams $params)
+    {
+        $this->pipeline = $pipeline;
+        $this->params = $params;
     }
 }

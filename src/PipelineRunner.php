@@ -31,10 +31,16 @@ use Psr\Http\Server\RequestHandlerInterface;
 readonly class PipelineRunner implements RequestHandlerInterface
 {
     /**
+     * @var Iterator<mixed, MiddlewareInterface|RequestHandlerInterface>
+     */
+    private readonly Iterator $pipeline;
+
+    /**
      * @param Iterator<mixed, MiddlewareInterface|RequestHandlerInterface> $pipeline
      */
-    public function __construct(private readonly Iterator $pipeline)
+    public function __construct(Iterator $pipeline)
     {
+        $this->pipeline = $pipeline;
     }
 
     #[Override]
