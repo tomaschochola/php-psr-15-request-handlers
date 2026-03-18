@@ -26,7 +26,6 @@ use Psr\Http\Server\RequestHandlerInterface;
 use RequestParseBodyException;
 
 use function assert;
-
 use function request_parse_body;
 
 /**
@@ -34,6 +33,13 @@ use function request_parse_body;
  */
 readonly class WithRequestPayloadMiddleware implements MiddlewareInterface
 {
+    private readonly ResponseFactoryInterface $responseFactory;
+
+    public function __construct(ResponseFactoryInterface $responseFactory)
+    {
+        $this->responseFactory = $responseFactory;
+    }
+
     #[NoDiscard]
     public static function inject(ContainerInterface $container): self
     {
@@ -42,13 +48,6 @@ readonly class WithRequestPayloadMiddleware implements MiddlewareInterface
         assert($responseFactory instanceof ResponseFactoryInterface);
 
         return new self($responseFactory);
-    }
-
-    private readonly ResponseFactoryInterface $responseFactory;
-
-    public function __construct(ResponseFactoryInterface $responseFactory)
-    {
-        $this->responseFactory = $responseFactory;
     }
 
     #[NoDiscard]

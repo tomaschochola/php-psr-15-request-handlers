@@ -15,21 +15,22 @@ declare(strict_types=1);
 
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
-use Iterator;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 /**
  * @internal
  *
  * @no-named-arguments
  */
-readonly class RouteMatch
+final readonly class RouteMatch
 {
+    public readonly RouteParams $params;
+
     /**
      * @var iterable<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>
      */
     public readonly iterable $pipeline;
-
-    public readonly RouteParams $params;
 
     /**
      * @param iterable<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>> $pipeline

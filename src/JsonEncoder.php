@@ -19,7 +19,6 @@ use NoDiscard;
 use Psr\Container\ContainerInterface;
 use UnexpectedValueException;
 
-use function assert;
 use function is_string;
 use function json_encode;
 
@@ -34,14 +33,12 @@ use const JSON_UNESCAPED_UNICODE;
  */
 readonly class JsonEncoder
 {
+    public function __construct() {}
+
     #[NoDiscard]
     public static function inject(ContainerInterface $container): self
     {
         return new self();
-    }
-
-    public function __construct()
-    {
     }
 
     #[NoDiscard]

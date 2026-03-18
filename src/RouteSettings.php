@@ -23,7 +23,7 @@ use Psr\Http\Server\RequestHandlerInterface;
  *
  * @no-named-arguments
  */
-readonly class RouteSettings
+final readonly class RouteSettings
 {
     /**
      * @var array<mixed, list<class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>>

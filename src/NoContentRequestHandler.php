@@ -22,6 +22,7 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+
 use function assert;
 
 /**
@@ -29,6 +30,13 @@ use function assert;
  */
 readonly class NoContentRequestHandler implements RequestHandlerInterface
 {
+    private readonly ResponseFactoryInterface $responseFactory;
+
+    public function __construct(ResponseFactoryInterface $responseFactory)
+    {
+        $this->responseFactory = $responseFactory;
+    }
+
     #[NoDiscard]
     public static function inject(ContainerInterface $container): self
     {
@@ -37,13 +45,6 @@ readonly class NoContentRequestHandler implements RequestHandlerInterface
         assert($responseFactory instanceof ResponseFactoryInterface);
 
         return new self($responseFactory);
-    }
-
-    private readonly ResponseFactoryInterface $responseFactory;
-
-    public function __construct(ResponseFactoryInterface $responseFactory)
-    {
-        $this->responseFactory = $responseFactory;
     }
 
     #[NoDiscard]

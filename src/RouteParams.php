@@ -15,12 +15,15 @@ declare(strict_types=1);
 
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
+use ArrayAccess;
 use ArrayIterator;
+use InvalidArgumentException;
 use IteratorAggregate;
+use LogicException;
 use Override;
 use Traversable;
 
-use function array_key_exists;
+use function is_int;
 
 /**
  * @no-named-arguments
@@ -28,15 +31,15 @@ use function array_key_exists;
  * @implements IteratorAggregate<int, string>
  * @implements ArrayAccess<int, string>
  */
-readonly class RouteParams implements IteratorAggregate, \ArrayAccess
+readonly class RouteParams implements ArrayAccess, IteratorAggregate
 {
     /**
-     * @var list<string>
+     * @var array<int, string>
      */
     public readonly array $params;
 
     /**
-     * @param list<string> $params
+     * @param array<int, string> $params
      */
     public function __construct(array $params)
     {
@@ -52,24 +55,32 @@ readonly class RouteParams implements IteratorAggregate, \ArrayAccess
     #[Override]
     public function offsetExists(mixed $offset): bool
     {
-        return array_key_exists($offset, $this->params);
+        if (!is_int($offset)) {
+            throw new InvalidArgumentException('$offset');
+        }
+
+        return isset($this->params[$offset]);
     }
 
     #[Override]
     public function offsetGet(mixed $offset): string
     {
+        if (!is_int($offset) || !isset($this->params[$offset])) {
+            throw new InvalidArgumentException('$offset');
+        }
+
         return $this->params[$offset];
     }
 
     #[Override]
     public function offsetSet(mixed $offset, mixed $value): never
     {
-        throw new \LogicException('RouteParams is readonly');
+        throw new LogicException('RouteParams is readonly');
     }
 
     #[Override]
     public function offsetUnset(mixed $offset): never
     {
-        throw new \LogicException('RouteParams is readonly');
+        throw new LogicException('RouteParams is readonly');
     }
 }

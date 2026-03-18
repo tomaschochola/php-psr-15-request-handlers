@@ -18,11 +18,8 @@ namespace TomasChochola\Psr\Http\RequestHandlers;
 use NoDiscard;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 
 use function assert;
-
 use function explode;
 use function is_array;
 use function is_iterable;
@@ -32,8 +29,15 @@ use function is_iterable;
  *
  * @no-named-arguments
  */
-readonly class RouteMatcher
+final readonly class RouteMatcher
 {
+    private readonly RouteSettings $registry;
+
+    public function __construct(RouteSettings $registry)
+    {
+        $this->registry = $registry;
+    }
+
     #[NoDiscard]
     public static function inject(ContainerInterface $container): self
     {
@@ -44,16 +48,6 @@ readonly class RouteMatcher
         return new self($registry);
     }
 
-    private readonly RouteSettings $registry;
-
-    public function __construct(RouteSettings $registry)
-    {
-        $this->registry = $registry;
-    }
-
-    /**
-     * @return RouteMatch
-     */
     #[NoDiscard]
     public function match(ServerRequestInterface $request): RouteMatch
     {
@@ -104,6 +98,7 @@ readonly class RouteMatcher
         $pipeline = $node['#'] ?? null;
 
         if (is_iterable($pipeline)) {
+            // @phpstan-ignore-next-line argument.type
             return new RouteMatch($pipeline, new RouteParams($params));
         }
 

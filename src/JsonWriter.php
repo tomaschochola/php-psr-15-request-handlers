@@ -26,9 +26,15 @@ use function assert;
  */
 readonly class JsonWriter
 {
+    private readonly JsonEncoder $jsonEncoder;
+
     private readonly StreamWriter $streamWriter;
 
-    private readonly JsonEncoder $jsonEncoder;
+    public function __construct(StreamWriter $streamWriter, JsonEncoder $jsonEncoder)
+    {
+        $this->streamWriter = $streamWriter;
+        $this->jsonEncoder = $jsonEncoder;
+    }
 
     #[NoDiscard]
     public static function inject(ContainerInterface $container): self
@@ -42,12 +48,13 @@ readonly class JsonWriter
         return new self($streamWriter, $jsonEncoder);
     }
 
-    public function __construct(StreamWriter $streamWriter, JsonEncoder $jsonEncoder)
-    {
-        $this->streamWriter = $streamWriter;
-        $this->jsonEncoder = $jsonEncoder;
-    }
-
+    /**
+     * @template T of MessageInterface
+     *
+     * @param T $message
+     *
+     * @return T
+     */
     #[NoDiscard]
     public function write(MessageInterface $message, mixed $data): MessageInterface
     {

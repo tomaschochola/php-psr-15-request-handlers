@@ -24,6 +24,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Throwable;
+
 use function assert;
 
 /**
@@ -31,6 +32,13 @@ use function assert;
  */
 readonly class ExceptionHandlerMiddleware implements MiddlewareInterface
 {
+    private readonly ResponseFactoryInterface $responseFactory;
+
+    public function __construct(ResponseFactoryInterface $responseFactory)
+    {
+        $this->responseFactory = $responseFactory;
+    }
+
     #[NoDiscard]
     public static function inject(ContainerInterface $container): self
     {
@@ -39,13 +47,6 @@ readonly class ExceptionHandlerMiddleware implements MiddlewareInterface
         assert($responseFactory instanceof ResponseFactoryInterface);
 
         return new self($responseFactory);
-    }
-
-    private readonly ResponseFactoryInterface $responseFactory;
-
-    public function __construct(ResponseFactoryInterface $responseFactory)
-    {
-        $this->responseFactory = $responseFactory;
     }
 
     #[NoDiscard]

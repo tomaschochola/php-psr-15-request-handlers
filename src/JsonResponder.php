@@ -27,6 +27,16 @@ use function assert;
  */
 readonly class JsonResponder
 {
+    private readonly JsonWriter $jsonWriter;
+
+    private readonly ResponseFactoryInterface $responseFactory;
+
+    public function __construct(JsonWriter $jsonWriter, ResponseFactoryInterface $responseFactory)
+    {
+        $this->jsonWriter = $jsonWriter;
+        $this->responseFactory = $responseFactory;
+    }
+
     #[NoDiscard]
     public static function inject(ContainerInterface $container): self
     {
@@ -39,23 +49,11 @@ readonly class JsonResponder
         return new self($jsonWriter, $responseFactory);
     }
 
-    private readonly JsonWriter $jsonWriter;
-
-    private readonly ResponseFactoryInterface $responseFactory;
-
-    public function __construct(JsonWriter $jsonWriter, ResponseFactoryInterface $responseFactory)
-    {
-        $this->jsonWriter = $jsonWriter;
-        $this->responseFactory = $responseFactory;
-    }
-
     #[NoDiscard]
     public function createResponse(int $code, string $reasonPhrase, mixed $data): ResponseInterface
     {
         $response = $this->responseFactory->createResponse($code, $reasonPhrase);
 
-        $response = $this->jsonWriter->write($response, $data);
-
-        return $response;
+        return $this->jsonWriter->write($response, $data);
     }
 }

@@ -17,29 +17,30 @@ namespace TomasChochola\Psr\Http\RequestHandlers;
 
 use Iterator;
 use NoDiscard;
-use Override;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+
+use function assert;
 
 /**
  * @internal
  *
  * @no-named-arguments
  */
-readonly class PipelineResolver
+final readonly class PipelineResolver
 {
-    #[NoDiscard]
-    public static function inject(ContainerInterface $container): self
-    {
-        return new self($container);
-    }
-
     private readonly ContainerInterface $container;
 
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
+    }
+
+    #[NoDiscard]
+    public static function inject(ContainerInterface $container): self
+    {
+        return new self($container);
     }
 
     /**
@@ -51,7 +52,11 @@ readonly class PipelineResolver
     public function resolve(iterable $pipeline): Iterator
     {
         foreach ($pipeline as $class) {
-            yield $this->container->get($class);
+            $resolved = $this->container->get($class);
+
+            assert($resolved instanceof MiddlewareInterface || $resolved instanceof RequestHandlerInterface);
+
+            yield $resolved;
         }
     }
 }

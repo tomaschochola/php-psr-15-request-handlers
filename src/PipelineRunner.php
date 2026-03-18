@@ -28,7 +28,7 @@ use Psr\Http\Server\RequestHandlerInterface;
  *
  * @no-named-arguments
  */
-readonly class PipelineRunner implements RequestHandlerInterface
+final readonly class PipelineRunner implements RequestHandlerInterface
 {
     /**
      * @var Iterator<mixed, MiddlewareInterface|RequestHandlerInterface>
@@ -52,7 +52,6 @@ readonly class PipelineRunner implements RequestHandlerInterface
 
         $current = $this->pipeline->current();
 
-        // @phpstan-ignore-next-line deadCode.unreachable
         $this->pipeline->next();
 
         if ($current instanceof MiddlewareInterface) {
