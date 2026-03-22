@@ -23,8 +23,9 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-use function parse_str;
-use function str_replace;
+use function explode;
+use function is_string;
+use function sscanf;
 
 /**
  * @no-named-arguments
@@ -49,7 +50,7 @@ readonly class WithRequestCookiesMiddleware implements MiddlewareInterface
 
         $result = [];
 
-        foreach (explode(';', $coookies) as $cookie) {
+        foreach (explode(';', $cookies) as $cookie) {
             $key = null;
             $val = null;
             $scanned = sscanf($cookie, " %[^=] = %[^\r\n]", $key, $val);
