@@ -41,15 +41,23 @@ readonly class WithRequestCookiesMiddleware implements MiddlewareInterface
     #[Override]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $cookie = $request->getHeaderLine('Cookie');
+        $cookies = $request->getHeaderLine('Cookie');
 
-        if ($cookie === '') {
+        if ($cookies === '') {
             return $handler->handle($request);
         }
 
         $result = [];
 
-        parse_str(str_replace([';', ' ;', '; ', ' ; '], '&', $cookie), $result);
+        foreach (explode(';', $coookies) as $cookie) {
+            $key = null;
+            $val = null;
+            $scanned = sscanf($cookie, " %[^=] = %[^\r\n]", $key, $val);
+
+            if ($scanned === 2 && is_string($key) && is_string($val)) {
+                $result[$key][] = $val;
+            }
+        }
 
         if ($result !== []) {
             $request = $request->withCookieParams($result);
