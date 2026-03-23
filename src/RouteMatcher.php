@@ -18,11 +18,14 @@ namespace TomasChochola\Psr\Http\RequestHandlers;
 use NoDiscard;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 use function assert;
 use function explode;
 use function is_array;
 use function is_iterable;
+use function rawurldecode;
 
 /**
  * @internal
@@ -48,8 +51,11 @@ final readonly class RouteMatcher
         return new self($registry);
     }
 
+    /**
+     * @return object{pipeline: iterable<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>, params: list<string>}
+     */
     #[NoDiscard]
-    public function match(ServerRequestInterface $request): RouteMatch
+    public function match(ServerRequestInterface $request): object
     {
         $method = $request->getMethod();
         $path = $request->getUri()->getPath();
@@ -57,13 +63,19 @@ final readonly class RouteMatcher
         $exact = $this->registry->exact["{$method} {$path}"] ?? null;
 
         if (is_iterable($exact)) {
-            return new RouteMatch($exact, new RouteParams([]));
+            return (object) [
+                'pipeline' => $exact,
+                'params' => [],
+            ];
         }
 
         $trie = $this->registry->trie[$method] ?? null;
 
         if (!is_array($trie)) {
-            return new RouteMatch([], new RouteParams([]));
+            return (object) [
+                'pipeline' => [],
+                'params' => [],
+            ];
         }
 
         $node = $trie;
@@ -87,21 +99,30 @@ final readonly class RouteMatcher
 
             if (is_array($try)) {
                 $node = $try;
-                $params[] = $chunk;
+                $params[] = rawurldecode($chunk);
 
                 continue;
             }
 
-            return new RouteMatch([], new RouteParams([]));
+            return (object) [
+                'pipeline' => [],
+                'params' => [],
+            ];
         }
 
         $pipeline = $node['#'] ?? null;
 
         if (is_iterable($pipeline)) {
-            // @phpstan-ignore-next-line argument.type
-            return new RouteMatch($pipeline, new RouteParams($params));
+            return (object) [
+                // @phpstan-ignore-next-line assign.propertyType
+                'pipeline' => $pipeline,
+                'params' => $params,
+            ];
         }
 
-        return new RouteMatch([], new RouteParams([]));
+        return (object) [
+            'pipeline' => [],
+            'params' => [],
+        ];
     }
 }

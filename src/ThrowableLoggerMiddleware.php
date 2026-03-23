@@ -22,48 +22,50 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Log\LoggerInterface;
+use Throwable;
 
-use function explode;
-use function is_string;
-use function sscanf;
+use function assert;
 
 /**
  * @no-named-arguments
  */
-readonly class WithRequestCookiesMiddleware implements MiddlewareInterface
+readonly class ThrowableLoggerMiddleware implements MiddlewareInterface
 {
+    private readonly LoggerInterface $logger;
+
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
     #[NoDiscard]
     public static function inject(ContainerInterface $container): self
     {
-        return new self();
+        $logger = $container->get(LoggerInterface::class);
+
+        assert($logger instanceof LoggerInterface);
+
+        return new self($logger);
     }
 
     #[NoDiscard]
     #[Override]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $cookies = $request->getHeaderLine('Cookie');
-
-        if ($cookies === '') {
+        try {
             return $handler->handle($request);
+        } catch (Throwable $e) {
+            $this->log($e, $request, $handler);
+
+            throw $e;
         }
+    }
 
-        $result = [];
-
-        foreach (explode(';', $cookies) as $cookie) {
-            $key = null;
-            $val = null;
-            $scanned = sscanf($cookie, " %[^=] = %[^;]", $key, $val);
-
-            if ($scanned === 2 && is_string($key) && is_string($val)) {
-                $result[$key][] = $val;
-            }
-        }
-
-        if ($result !== []) {
-            $request = $request->withCookieParams($result);
-        }
-
-        return $handler->handle($request);
+    protected function log(Throwable $e, ServerRequestInterface $request, RequestHandlerInterface $handler): void
+    {
+        $this->logger->error($e->getMessage(), [
+            'exception' => $e,
+        ]);
     }
 }

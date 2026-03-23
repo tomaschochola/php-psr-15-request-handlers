@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
+use Exception;
 use NoDiscard;
 use Override;
 use Psr\Container\ContainerInterface;
@@ -23,15 +24,13 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use RequestParseBodyException;
 
 use function assert;
-use function request_parse_body;
 
 /**
  * @no-named-arguments
  */
-readonly class WithRequestPayloadMiddleware implements MiddlewareInterface
+readonly class ExceptionCatcherMiddleware implements MiddlewareInterface
 {
     private readonly ResponseFactoryInterface $responseFactory;
 
@@ -55,22 +54,15 @@ readonly class WithRequestPayloadMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         try {
-            $parsed = request_parse_body();
-        } catch (RequestParseBodyException) {
-            return $this->responseFactory->createResponse(415);
+            return $handler->handle($request);
+        } catch (Exception $e) {
+            return $this->reject($e, $request, $handler);
         }
+    }
 
-        $body = $parsed[0] ?? [];
-        $files = $parsed[1] ?? [];
-
-        if ($body !== []) {
-            $request = $request->withParsedBody($body);
-        }
-
-        if ($files !== []) {
-            $request = $request->withUploadedFiles($files);
-        }
-
-        return $handler->handle($request);
+    #[NoDiscard]
+    protected function reject(Exception $e, ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
+        return $this->responseFactory->createResponse(500);
     }
 }

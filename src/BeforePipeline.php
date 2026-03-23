@@ -17,20 +17,14 @@ namespace TomasChochola\Psr\Http\RequestHandlers;
 
 use NoDiscard;
 use Psr\Container\ContainerInterface;
-use UnexpectedValueException;
-
-use function is_string;
-use function json_encode;
-
-use const JSON_INVALID_UTF8_SUBSTITUTE;
-use const JSON_PRESERVE_ZERO_FRACTION;
-use const JSON_UNESCAPED_SLASHES;
-use const JSON_UNESCAPED_UNICODE;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 /**
  * @no-named-arguments
  */
-readonly class JsonEncoder
+readonly class BeforePipeline
 {
     public function __construct() {}
 
@@ -40,15 +34,16 @@ readonly class JsonEncoder
         return new self();
     }
 
+    /**
+     * @return iterable<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>
+     */
     #[NoDiscard]
-    public function encode(mixed $data): string
+    public function pipeline(ServerRequestInterface $request): iterable
     {
-        $encoded = json_encode($data, JSON_INVALID_UTF8_SUBSTITUTE | JSON_PRESERVE_ZERO_FRACTION | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        yield ThrowableCatcherMiddleware::class;
 
-        if (!is_string($encoded)) {
-            throw new UnexpectedValueException('json_encode');
-        }
+        yield ThrowableLoggerMiddleware::class;
 
-        return $encoded;
+        yield ErrorRaiserMiddleware::class;
     }
 }

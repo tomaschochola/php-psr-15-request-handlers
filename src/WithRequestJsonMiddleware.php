@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
+use JsonException;
 use NoDiscard;
 use Override;
 use Psr\Container\ContainerInterface;
@@ -23,15 +24,16 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-use function explode;
-use function is_string;
-use function sscanf;
+use function is_array;
+use function json_decode;
 
 /**
  * @no-named-arguments
  */
-readonly class WithRequestCookiesMiddleware implements MiddlewareInterface
+readonly class WithRequestJsonMiddleware implements MiddlewareInterface
 {
+    public function __construct() {}
+
     #[NoDiscard]
     public static function inject(ContainerInterface $container): self
     {
@@ -42,28 +44,28 @@ readonly class WithRequestCookiesMiddleware implements MiddlewareInterface
     #[Override]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $cookies = $request->getHeaderLine('Cookie');
+        $body = (string) $request->getBody();
 
-        if ($cookies === '') {
+        if ($body === '') {
             return $handler->handle($request);
         }
 
-        $result = [];
+        $parsedBody = json_decode($body, true, 512, JSON_INVALID_UTF8_SUBSTITUTE | JSON_BIGINT_AS_STRING);
 
-        foreach (explode(';', $cookies) as $cookie) {
-            $key = null;
-            $val = null;
-            $scanned = sscanf($cookie, " %[^=] = %[^;]", $key, $val);
-
-            if ($scanned === 2 && is_string($key) && is_string($val)) {
-                $result[$key][] = $val;
-            }
+        if (!is_array($parsedBody)) {
+            return $this->reject($request, $handler);
         }
 
-        if ($result !== []) {
-            $request = $request->withCookieParams($result);
+        if ($parsedBody !== []) {
+            $request = $request->withParsedBody($parsedBody);
         }
 
+        return $handler->handle($request);
+    }
+
+    #[NoDiscard]
+    protected function reject(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
         return $handler->handle($request);
     }
 }

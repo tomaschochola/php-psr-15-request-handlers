@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
+use ErrorException;
 use NoDiscard;
 use Override;
 use Psr\Container\ContainerInterface;
@@ -23,14 +24,13 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-use function explode;
-use function is_string;
-use function sscanf;
+use function restore_error_handler;
+use function set_error_handler;
 
 /**
  * @no-named-arguments
  */
-readonly class WithRequestCookiesMiddleware implements MiddlewareInterface
+readonly class ErrorRaiserMiddleware implements MiddlewareInterface
 {
     #[NoDiscard]
     public static function inject(ContainerInterface $container): self
@@ -42,28 +42,14 @@ readonly class WithRequestCookiesMiddleware implements MiddlewareInterface
     #[Override]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $cookies = $request->getHeaderLine('Cookie');
+        set_error_handler(static function (int $severity, string $message, string $file, int $line): never {
+            throw new ErrorException($message, 0, $severity, $file, $line);
+        });
 
-        if ($cookies === '') {
+        try {
             return $handler->handle($request);
+        } finally {
+            restore_error_handler();
         }
-
-        $result = [];
-
-        foreach (explode(';', $cookies) as $cookie) {
-            $key = null;
-            $val = null;
-            $scanned = sscanf($cookie, " %[^=] = %[^;]", $key, $val);
-
-            if ($scanned === 2 && is_string($key) && is_string($val)) {
-                $result[$key][] = $val;
-            }
-        }
-
-        if ($result !== []) {
-            $request = $request->withCookieParams($result);
-        }
-
-        return $handler->handle($request);
     }
 }

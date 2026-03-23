@@ -18,52 +18,51 @@ namespace TomasChochola\Psr\Http\RequestHandlers;
 use NoDiscard;
 use Override;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Throwable;
 
-use function explode;
-use function is_string;
-use function sscanf;
+use function assert;
 
 /**
  * @no-named-arguments
  */
-readonly class WithRequestCookiesMiddleware implements MiddlewareInterface
+readonly class ThrowableCatcherMiddleware implements MiddlewareInterface
 {
+    private readonly ResponseFactoryInterface $responseFactory;
+
+    public function __construct(ResponseFactoryInterface $responseFactory)
+    {
+        $this->responseFactory = $responseFactory;
+    }
+
     #[NoDiscard]
     public static function inject(ContainerInterface $container): self
     {
-        return new self();
+        $responseFactory = $container->get(ResponseFactoryInterface::class);
+
+        assert($responseFactory instanceof ResponseFactoryInterface);
+
+        return new self($responseFactory);
     }
 
     #[NoDiscard]
     #[Override]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $cookies = $request->getHeaderLine('Cookie');
-
-        if ($cookies === '') {
+        try {
             return $handler->handle($request);
+        } catch (Throwable $e) {
+            return $this->reject($e, $request, $handler);
         }
+    }
 
-        $result = [];
-
-        foreach (explode(';', $cookies) as $cookie) {
-            $key = null;
-            $val = null;
-            $scanned = sscanf($cookie, " %[^=] = %[^;]", $key, $val);
-
-            if ($scanned === 2 && is_string($key) && is_string($val)) {
-                $result[$key][] = $val;
-            }
-        }
-
-        if ($result !== []) {
-            $request = $request->withCookieParams($result);
-        }
-
-        return $handler->handle($request);
+    #[NoDiscard]
+    protected function reject(Throwable $e, ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
+        return $this->responseFactory->createResponse(500);
     }
 }

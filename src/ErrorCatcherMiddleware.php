@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
+use Error;
 use NoDiscard;
 use Override;
 use Psr\Container\ContainerInterface;
@@ -23,14 +24,13 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Throwable;
 
 use function assert;
 
 /**
  * @no-named-arguments
  */
-readonly class ExceptionHandlerMiddleware implements MiddlewareInterface
+readonly class ErrorCatcherMiddleware implements MiddlewareInterface
 {
     private readonly ResponseFactoryInterface $responseFactory;
 
@@ -55,8 +55,14 @@ readonly class ExceptionHandlerMiddleware implements MiddlewareInterface
     {
         try {
             return $handler->handle($request);
-        } catch (Throwable) {
-            return $this->responseFactory->createResponse(500);
+        } catch (Error $e) {
+            return $this->reject($e, $request, $handler);
         }
+    }
+
+    #[NoDiscard]
+    protected function reject(Error $e, ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
+        return $this->responseFactory->createResponse(500);
     }
 }

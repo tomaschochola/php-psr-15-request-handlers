@@ -22,7 +22,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Traversable;
 
 use function assert;
 
@@ -31,26 +30,36 @@ use function assert;
  */
 readonly class RouteRequestHandler implements RequestHandlerInterface
 {
+    private readonly AfterPipeline $after;
+
+    private readonly BeforePipeline $before;
+
     private readonly RouteMatcher $matcher;
 
     private readonly PipelineResolver $resolver;
 
-    public function __construct(RouteMatcher $matcher, PipelineResolver $resolver)
+    public function __construct(RouteMatcher $matcher, PipelineResolver $resolver, BeforePipeline $before, AfterPipeline $after)
     {
         $this->matcher = $matcher;
         $this->resolver = $resolver;
+        $this->before = $before;
+        $this->after = $after;
     }
 
     #[NoDiscard]
     public static function inject(ContainerInterface $container): self
     {
+        $after = $container->get(AfterPipeline::class);
+        $before = $container->get(BeforePipeline::class);
         $matcher = $container->get(RouteMatcher::class);
         $resolver = $container->get(PipelineResolver::class);
 
+        assert($after instanceof AfterPipeline);
+        assert($before instanceof BeforePipeline);
         assert($matcher instanceof RouteMatcher);
         assert($resolver instanceof PipelineResolver);
 
-        return new self($matcher, $resolver);
+        return new self($matcher, $resolver, $before, $after);
     }
 
     #[NoDiscard]
@@ -59,39 +68,21 @@ readonly class RouteRequestHandler implements RequestHandlerInterface
     {
         $match = $this->matcher->match($request);
 
-        return (new PipelineRunner($this->resolver->resolve(self::pipeline($request, $match))))->handle($request->withAttribute(RouteParams::class, $match->params));
+        return (new PipelineRunner($this->resolver->resolve($this->pipeline($request, $match->pipeline))))->handle($request->withAttribute(RouteParams::class, new RouteParams($match->params)));
     }
 
     /**
-     * @return Traversable<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>
-     */
-    #[NoDiscard]
-    private static function after(ServerRequestInterface $request): Traversable
-    {
-        yield NotFoundRequestHandler::class;
-    }
-
-    /**
-     * @return Traversable<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>
-     */
-    #[NoDiscard]
-    private static function before(ServerRequestInterface $request): Traversable
-    {
-        yield ExceptionHandlerMiddleware::class;
-
-        yield ErrorHandlerMiddleware::class;
-    }
-
-    /**
+     * @param iterable<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>> $pipeline
+     *
      * @return iterable<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>
      */
     #[NoDiscard]
-    private static function pipeline(ServerRequestInterface $request, RouteMatch $match): iterable
+    private function pipeline(ServerRequestInterface $request, iterable $pipeline): iterable
     {
-        yield from self::before($request);
+        yield from $this->before->pipeline($request);
 
-        yield from $match->pipeline;
+        yield from $pipeline;
 
-        yield from self::after($request);
+        yield from $this->after->pipeline($request);
     }
 }
