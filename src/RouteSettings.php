@@ -19,11 +19,9 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * @internal
- *
  * @no-named-arguments
  */
-final readonly class RouteSettings
+readonly class RouteSettings
 {
     /**
      * @var array<mixed, list<class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>>

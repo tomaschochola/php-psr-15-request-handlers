@@ -25,7 +25,6 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 readonly class BeforePipeline
 {
-
     /**
      * @return iterable<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>
      */

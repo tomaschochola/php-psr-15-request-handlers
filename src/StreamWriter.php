@@ -15,7 +15,6 @@ declare(strict_types=1);
 
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
-use NoDiscard;
 use Psr\Http\Message\StreamInterface;
 use UnexpectedValueException;
 

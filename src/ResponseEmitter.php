@@ -16,7 +16,6 @@ declare(strict_types=1);
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
 use LogicException;
-use NoDiscard;
 use Psr\Http\Message\ResponseInterface;
 use UnexpectedValueException;
 

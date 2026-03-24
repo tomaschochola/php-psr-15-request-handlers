@@ -33,7 +33,6 @@ use const JSON_INVALID_UTF8_SUBSTITUTE;
  */
 readonly class WithRequestJsonMiddleware implements MiddlewareInterface
 {
-
     #[NoDiscard]
     #[Override]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface

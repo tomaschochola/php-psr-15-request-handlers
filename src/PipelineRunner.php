@@ -24,11 +24,9 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * @internal
- *
  * @no-named-arguments
  */
-final readonly class PipelineRunner implements RequestHandlerInterface
+readonly class PipelineRunner implements RequestHandlerInterface
 {
     /**
      * @var Iterator<mixed, MiddlewareInterface|RequestHandlerInterface>

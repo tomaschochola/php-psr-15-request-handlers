@@ -24,11 +24,9 @@ use Psr\Http\Server\RequestHandlerInterface;
 use function assert;
 
 /**
- * @internal
- *
  * @no-named-arguments
  */
-final readonly class PipelineResolver
+readonly class PipelineResolver
 {
     private readonly ContainerInterface $container;
 

@@ -20,18 +20,15 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-use function assert;
 use function explode;
 use function is_array;
 use function is_iterable;
 use function rawurldecode;
 
 /**
- * @internal
- *
  * @no-named-arguments
  */
-final readonly class RouteMatcher
+readonly class RouteMatcher
 {
     private readonly RouteSettings $registry;
 

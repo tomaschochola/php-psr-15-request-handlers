@@ -18,8 +18,6 @@ namespace TomasChochola\Psr\Http\RequestHandlers;
 use NoDiscard;
 use Psr\Http\Message\MessageInterface;
 
-use function assert;
-
 /**
  * @no-named-arguments
  */

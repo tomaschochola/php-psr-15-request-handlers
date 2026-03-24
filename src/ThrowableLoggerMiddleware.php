@@ -24,8 +24,6 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
-use function assert;
-
 /**
  * @no-named-arguments
  */

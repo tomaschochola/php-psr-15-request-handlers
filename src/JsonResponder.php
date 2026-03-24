@@ -19,8 +19,6 @@ use NoDiscard;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 
-use function assert;
-
 /**
  * @no-named-arguments
  */
