@@ -15,7 +15,6 @@ declare(strict_types=1);
 
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
-use Exception;
 use NoDiscard;
 use Override;
 use Psr\Container\ContainerInterface;
@@ -24,13 +23,16 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Throwable;
 
+use function abs;
 use function assert;
+use function is_int;
 
 /**
  * @no-named-arguments
  */
-readonly class ExceptionCatcherMiddleware implements MiddlewareInterface
+readonly class NegativeCatcherMiddleware implements MiddlewareInterface
 {
     private readonly ResponseFactoryInterface $responseFactory;
 
@@ -55,16 +57,30 @@ readonly class ExceptionCatcherMiddleware implements MiddlewareInterface
     {
         try {
             return $handler->handle($request);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return $this->reject($e, $request, $handler);
         }
     }
 
     #[NoDiscard]
-    protected function reject(Exception $e, ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    protected function reject(Throwable $e, ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if ($e instanceof HttpThrowableInterface) {
             return $this->responseFactory->createResponse($e->status);
+        }
+
+        $code = $e->getCode();
+
+        if (!is_int($code)) {
+            return $this->responseFactory->createResponse(500);
+        }
+
+        if ($code < 0) {
+            $status = abs($code);
+
+            if ($status >= 400 && $status <= 599) {
+                return $this->responseFactory->createResponse($status);
+            }
         }
 
         return $this->responseFactory->createResponse(500);

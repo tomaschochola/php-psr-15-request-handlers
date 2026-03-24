@@ -63,6 +63,10 @@ readonly class ThrowableCatcherMiddleware implements MiddlewareInterface
     #[NoDiscard]
     protected function reject(Throwable $e, ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        if ($e instanceof HttpThrowableInterface) {
+            return $this->responseFactory->createResponse($e->status);
+        }
+
         return $this->responseFactory->createResponse(500);
     }
 }
