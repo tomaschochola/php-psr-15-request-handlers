@@ -16,7 +16,6 @@ declare(strict_types=1);
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
 use NoDiscard;
-use Psr\Container\ContainerInterface;
 use Psr\Http\Message\MessageInterface;
 
 use function assert;
@@ -34,18 +33,6 @@ readonly class JsonWriter
     {
         $this->streamWriter = $streamWriter;
         $this->jsonEncoder = $jsonEncoder;
-    }
-
-    #[NoDiscard]
-    public static function inject(ContainerInterface $container): self
-    {
-        $streamWriter = $container->get(StreamWriter::class);
-        $jsonEncoder = $container->get(JsonEncoder::class);
-
-        assert($streamWriter instanceof StreamWriter);
-        assert($jsonEncoder instanceof JsonEncoder);
-
-        return new self($streamWriter, $jsonEncoder);
     }
 
     /**

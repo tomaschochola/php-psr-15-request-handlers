@@ -17,7 +17,6 @@ namespace TomasChochola\Psr\Http\RequestHandlers;
 
 use NoDiscard;
 use Override;
-use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
@@ -47,18 +46,6 @@ readonly class WithRequestFormMiddleware implements MiddlewareInterface
     {
         $this->streamFactory = $streamFactory;
         $this->uploadedFileFactory = $uploadedFileFactory;
-    }
-
-    #[NoDiscard]
-    public static function inject(ContainerInterface $container): self
-    {
-        $streamFactory = $container->get(StreamFactoryInterface::class);
-        $uploadedFileFactory = $container->get(UploadedFileFactoryInterface::class);
-
-        assert($streamFactory instanceof StreamFactoryInterface);
-        assert($uploadedFileFactory instanceof UploadedFileFactoryInterface);
-
-        return new self($streamFactory, $uploadedFileFactory);
     }
 
     #[NoDiscard]

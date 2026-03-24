@@ -17,7 +17,6 @@ namespace TomasChochola\Psr\Http\RequestHandlers;
 
 use NoDiscard;
 use Override;
-use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -26,7 +25,6 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Throwable;
 
 use function abs;
-use function assert;
 use function is_int;
 
 /**
@@ -39,16 +37,6 @@ readonly class NegativeCatcherMiddleware implements MiddlewareInterface
     public function __construct(ResponseFactoryInterface $responseFactory)
     {
         $this->responseFactory = $responseFactory;
-    }
-
-    #[NoDiscard]
-    public static function inject(ContainerInterface $container): self
-    {
-        $responseFactory = $container->get(ResponseFactoryInterface::class);
-
-        assert($responseFactory instanceof ResponseFactoryInterface);
-
-        return new self($responseFactory);
     }
 
     #[NoDiscard]
@@ -83,6 +71,6 @@ readonly class NegativeCatcherMiddleware implements MiddlewareInterface
             }
         }
 
-        return $this->responseFactory->createResponse(500);
+        throw $e;
     }
 }

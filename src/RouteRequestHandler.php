@@ -17,7 +17,6 @@ namespace TomasChochola\Psr\Http\RequestHandlers;
 
 use NoDiscard;
 use Override;
-use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -44,22 +43,6 @@ readonly class RouteRequestHandler implements RequestHandlerInterface
         $this->resolver = $resolver;
         $this->before = $before;
         $this->after = $after;
-    }
-
-    #[NoDiscard]
-    public static function inject(ContainerInterface $container): self
-    {
-        $after = $container->get(AfterPipeline::class);
-        $before = $container->get(BeforePipeline::class);
-        $matcher = $container->get(RouteMatcher::class);
-        $resolver = $container->get(PipelineResolver::class);
-
-        assert($after instanceof AfterPipeline);
-        assert($before instanceof BeforePipeline);
-        assert($matcher instanceof RouteMatcher);
-        assert($resolver instanceof PipelineResolver);
-
-        return new self($matcher, $resolver, $before, $after);
     }
 
     #[NoDiscard]

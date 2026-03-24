@@ -18,7 +18,6 @@ namespace TomasChochola\Psr\Http\RequestHandlers;
 use Exception;
 use NoDiscard;
 use Override;
-use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -37,16 +36,6 @@ readonly class ExceptionCatcherMiddleware implements MiddlewareInterface
     public function __construct(ResponseFactoryInterface $responseFactory)
     {
         $this->responseFactory = $responseFactory;
-    }
-
-    #[NoDiscard]
-    public static function inject(ContainerInterface $container): self
-    {
-        $responseFactory = $container->get(ResponseFactoryInterface::class);
-
-        assert($responseFactory instanceof ResponseFactoryInterface);
-
-        return new self($responseFactory);
     }
 
     #[NoDiscard]

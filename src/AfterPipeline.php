@@ -16,7 +16,6 @@ declare(strict_types=1);
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
 use NoDiscard;
-use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -26,13 +25,6 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 readonly class AfterPipeline
 {
-    public function __construct() {}
-
-    #[NoDiscard]
-    public static function inject(ContainerInterface $container): self
-    {
-        return new self();
-    }
 
     /**
      * @return iterable<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>

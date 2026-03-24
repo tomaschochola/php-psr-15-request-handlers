@@ -18,7 +18,6 @@ namespace TomasChochola\Psr\Http\RequestHandlers;
 use Error;
 use NoDiscard;
 use Override;
-use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -37,16 +36,6 @@ readonly class ErrorLoggerMiddleware implements MiddlewareInterface
     public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
-    }
-
-    #[NoDiscard]
-    public static function inject(ContainerInterface $container): self
-    {
-        $logger = $container->get(LoggerInterface::class);
-
-        assert($logger instanceof LoggerInterface);
-
-        return new self($logger);
     }
 
     #[NoDiscard]

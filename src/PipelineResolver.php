@@ -37,12 +37,6 @@ final readonly class PipelineResolver
         $this->container = $container;
     }
 
-    #[NoDiscard]
-    public static function inject(ContainerInterface $container): self
-    {
-        return new self($container);
-    }
-
     /**
      * @param iterable<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>> $pipeline
      *

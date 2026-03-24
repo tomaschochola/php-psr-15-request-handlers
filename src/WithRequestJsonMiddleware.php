@@ -17,7 +17,6 @@ namespace TomasChochola\Psr\Http\RequestHandlers;
 
 use NoDiscard;
 use Override;
-use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -34,13 +33,6 @@ use const JSON_INVALID_UTF8_SUBSTITUTE;
  */
 readonly class WithRequestJsonMiddleware implements MiddlewareInterface
 {
-    public function __construct() {}
-
-    #[NoDiscard]
-    public static function inject(ContainerInterface $container): self
-    {
-        return new self();
-    }
 
     #[NoDiscard]
     #[Override]

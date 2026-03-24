@@ -16,7 +16,6 @@ declare(strict_types=1);
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
 use NoDiscard;
-use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -39,16 +38,6 @@ final readonly class RouteMatcher
     public function __construct(RouteSettings $registry)
     {
         $this->registry = $registry;
-    }
-
-    #[NoDiscard]
-    public static function inject(ContainerInterface $container): self
-    {
-        $registry = $container->get(RouteSettings::class);
-
-        assert($registry instanceof RouteSettings);
-
-        return new self($registry);
     }
 
     /**
