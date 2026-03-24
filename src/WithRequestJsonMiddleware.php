@@ -15,7 +15,6 @@ declare(strict_types=1);
 
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
-use JsonException;
 use NoDiscard;
 use Override;
 use Psr\Container\ContainerInterface;
@@ -26,6 +25,9 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 use function is_array;
 use function json_decode;
+
+use const JSON_BIGINT_AS_STRING;
+use const JSON_INVALID_UTF8_SUBSTITUTE;
 
 /**
  * @no-named-arguments

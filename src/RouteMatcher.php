@@ -113,8 +113,8 @@ final readonly class RouteMatcher
         $pipeline = $node['#'] ?? null;
 
         if (is_iterable($pipeline)) {
+            // @phpstan-ignore-next-line return.type
             return (object) [
-                // @phpstan-ignore-next-line assign.propertyType
                 'pipeline' => $pipeline,
                 'params' => $params,
             ];

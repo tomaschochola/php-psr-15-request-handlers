@@ -20,26 +20,45 @@ use Override;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\UploadedFileInterface;
+use Psr\Http\Message\StreamFactoryInterface;
+use Psr\Http\Message\UploadedFileFactoryInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use RequestParseBodyException;
-use TomasChochola\Psr\Http\Message\HttpUploadedFile;
 
+use function assert;
 use function is_array;
+use function is_int;
+use function is_string;
 use function request_parse_body;
+
+use const UPLOAD_ERR_OK;
 
 /**
  * @no-named-arguments
  */
 readonly class WithRequestFormMiddleware implements MiddlewareInterface
 {
-    public function __construct() {}
+    private readonly StreamFactoryInterface $streamFactory;
+
+    private readonly UploadedFileFactoryInterface $uploadedFileFactory;
+
+    public function __construct(StreamFactoryInterface $streamFactory, UploadedFileFactoryInterface $uploadedFileFactory)
+    {
+        $this->streamFactory = $streamFactory;
+        $this->uploadedFileFactory = $uploadedFileFactory;
+    }
 
     #[NoDiscard]
     public static function inject(ContainerInterface $container): self
     {
-        return new self();
+        $streamFactory = $container->get(StreamFactoryInterface::class);
+        $uploadedFileFactory = $container->get(UploadedFileFactoryInterface::class);
+
+        assert($streamFactory instanceof StreamFactoryInterface);
+        assert($uploadedFileFactory instanceof UploadedFileFactoryInterface);
+
+        return new self($streamFactory, $uploadedFileFactory);
     }
 
     #[NoDiscard]
@@ -60,7 +79,7 @@ readonly class WithRequestFormMiddleware implements MiddlewareInterface
         }
 
         if ($files !== []) {
-            $request = $request->withUploadedFiles(self::uploadedFiles($files));
+            $request = $request->withUploadedFiles($this->uploadedFiles($files));
         }
 
         return $handler->handle($request);
@@ -74,18 +93,38 @@ readonly class WithRequestFormMiddleware implements MiddlewareInterface
 
     /**
      * @param array<mixed, mixed> $files
-     * @return array<mixed, UploadedFileInterface|array<mixed, UploadedFileInterface|array<mixed, UploadedFileInterface|array<mixed, UploadedFileInterface|array<mixed, UploadedFileInterface>>>>>
+     * @return array<mixed, mixed>
      */
     #[NoDiscard]
-    private static function uploadedFiles(array $files): array
+    private function uploadedFiles(array $files): array
     {
         $result = [];
 
         foreach ($files as $key => $value) {
-            if (is_array($value) && isset($value['tmp_name'], $value['size'], $value['error']) && ! is_array($value['tmp_name'])) {
-                $result[$key] = new HttpUploadedFile($value['tmp_name'], $value['size'], $value['error'], $value['name'] ?? null, $value['type'] ?? null);
+            assert(is_array($value));
+
+            if (!isset($value['tmp_name']) || is_array($value['tmp_name'])) {
+                $result[$key] = $this->uploadedFiles($value);
             } else {
-                $result[$key] = self::uploadedFiles($value);
+                $tmpName = $value['tmp_name'] ?? null;
+                $size = $value['size'] ?? null;
+                $error = $value['error'] ?? null;
+                $clientFilename = $value['name'] ?? null;
+                $clientMediaType = $value['type'] ?? null;
+
+                assert(is_string($tmpName));
+                assert(is_int($size));
+                assert(is_int($error));
+                assert($clientFilename === null || is_string($clientFilename));
+                assert($clientMediaType === null || is_string($clientMediaType));
+
+                if ($error === UPLOAD_ERR_OK) {
+                    $stream = $this->streamFactory->createStreamFromFile($tmpName, 'rb');
+                } else {
+                    $stream = $this->streamFactory->createStream();
+                }
+
+                $result[$key] = $this->uploadedFileFactory->createUploadedFile($stream, $size, $error, $clientFilename, $clientMediaType);
             }
         }
 

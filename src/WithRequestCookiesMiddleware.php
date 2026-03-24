@@ -53,7 +53,7 @@ readonly class WithRequestCookiesMiddleware implements MiddlewareInterface
         foreach (explode(';', $cookies) as $cookie) {
             $key = null;
             $val = null;
-            $scanned = sscanf($cookie, " %[^=] = %[^;]", $key, $val);
+            $scanned = sscanf($cookie, ' %[^=] = %[^;]', $key, $val);
 
             if ($scanned === 2 && is_string($key) && is_string($val)) {
                 $result[$key][] = $val;

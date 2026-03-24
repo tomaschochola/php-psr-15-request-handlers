@@ -23,8 +23,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+use function apache_request_headers;
 use function assert;
-use function getallheaders;
 use function is_string;
 
 /**
@@ -42,7 +42,7 @@ readonly class WithRequestHeadersMiddleware implements MiddlewareInterface
     #[Override]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        foreach (getallheaders() as $key => $value) {
+        foreach (apache_request_headers() as $key => $value) {
             assert(is_string($value));
 
             $request = $request->withAddedHeader((string) $key, $value);
