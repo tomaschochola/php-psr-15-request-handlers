@@ -106,7 +106,7 @@ readonly class WithRequestFormMiddleware implements MiddlewareInterface
                 assert($clientMediaType === null || is_string($clientMediaType));
 
                 if ($error === UPLOAD_ERR_OK) {
-                    $stream = $this->streamFactory->createStreamFromFile($tmpName, 'rb');
+                    $stream = $this->streamFactory->createStreamFromFile($tmpName, 'r');
                 } else {
                     $stream = $this->streamFactory->createStream();
                 }
