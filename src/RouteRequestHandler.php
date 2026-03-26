@@ -27,15 +27,15 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 readonly class RouteRequestHandler implements RequestHandlerInterface
 {
-    private readonly AfterPipeline $after;
+    private readonly AfterPipelineInterface $after;
 
-    private readonly BeforePipeline $before;
+    private readonly BeforePipelineInterface $before;
 
-    private readonly RouteMatcher $matcher;
+    private readonly RouteMatcherInterface $matcher;
 
-    private readonly PipelineResolver $resolver;
+    private readonly PipelineResolverInterface $resolver;
 
-    public function __construct(RouteMatcher $matcher, PipelineResolver $resolver, BeforePipeline $before, AfterPipeline $after)
+    public function __construct(RouteMatcherInterface $matcher, PipelineResolverInterface $resolver, BeforePipelineInterface $before, AfterPipelineInterface $after)
     {
         $this->matcher = $matcher;
         $this->resolver = $resolver;

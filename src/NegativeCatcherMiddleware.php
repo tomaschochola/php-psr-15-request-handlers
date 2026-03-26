@@ -53,17 +53,9 @@ readonly class NegativeCatcherMiddleware implements MiddlewareInterface
     #[NoDiscard]
     protected function reject(Throwable $e, ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        if ($e instanceof HttpThrowableInterface) {
-            return $this->responseFactory->createResponse($e->status);
-        }
-
         $code = $e->getCode();
 
-        if (!is_int($code)) {
-            return $this->responseFactory->createResponse(500);
-        }
-
-        if ($code < 0) {
+        if (is_int($code) && $code < 0) {
             $status = abs($code);
 
             if ($status >= 400 && $status <= 599) {

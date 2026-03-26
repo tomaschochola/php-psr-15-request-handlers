@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
 use LogicException;
+use Override;
 use Psr\Http\Message\ResponseInterface;
 use UnexpectedValueException;
 
@@ -31,8 +32,9 @@ use function stream_copy_to_stream;
 /**
  * @no-named-arguments
  */
-readonly class ResponseEmitter
+readonly class ResponseEmitter implements ResponseEmitterInterface
 {
+    #[Override]
     public function emit(ResponseInterface $response): never
     {
         if (headers_sent()) {

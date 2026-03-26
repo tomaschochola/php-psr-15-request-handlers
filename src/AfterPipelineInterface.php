@@ -16,7 +16,6 @@ declare(strict_types=1);
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
 use NoDiscard;
-use Override;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -24,19 +23,11 @@ use Psr\Http\Server\RequestHandlerInterface;
 /**
  * @no-named-arguments
  */
-readonly class BeforePipeline implements BeforePipelineInterface
+interface AfterPipelineInterface
 {
     /**
      * @return iterable<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>
      */
     #[NoDiscard]
-    #[Override]
-    public function pipeline(ServerRequestInterface $request): iterable
-    {
-        yield ThrowableCatcherMiddleware::class;
-
-        yield ThrowableLoggerMiddleware::class;
-
-        yield ErrorRaiserMiddleware::class;
-    }
+    public function pipeline(ServerRequestInterface $request): iterable;
 }

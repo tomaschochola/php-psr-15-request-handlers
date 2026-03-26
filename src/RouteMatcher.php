@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
 use NoDiscard;
+use Override;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -28,11 +29,11 @@ use function rawurldecode;
 /**
  * @no-named-arguments
  */
-readonly class RouteMatcher
+readonly class RouteMatcher implements RouteMatcherInterface
 {
-    private readonly RouteSettings $registry;
+    private readonly RouteSettingsInterface $registry;
 
-    public function __construct(RouteSettings $registry)
+    public function __construct(RouteSettingsInterface $registry)
     {
         $this->registry = $registry;
     }
@@ -41,6 +42,7 @@ readonly class RouteMatcher
      * @return object{pipeline: iterable<mixed, class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>, params: list<string>}
      */
     #[NoDiscard]
+    #[Override]
     public function match(ServerRequestInterface $request): object
     {
         $method = $request->getMethod();

@@ -21,7 +21,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 /**
  * @no-named-arguments
  */
-readonly class RouteSettings
+readonly class RouteSettings implements RouteSettingsInterface
 {
     /**
      * @var array<mixed, list<class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>>

@@ -17,6 +17,7 @@ namespace TomasChochola\Psr\Http\RequestHandlers;
 
 use Iterator;
 use NoDiscard;
+use Override;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -26,7 +27,7 @@ use function assert;
 /**
  * @no-named-arguments
  */
-readonly class PipelineResolver
+readonly class PipelineResolver implements PipelineResolverInterface
 {
     private readonly ContainerInterface $container;
 
@@ -41,6 +42,7 @@ readonly class PipelineResolver
      * @return Iterator<mixed, MiddlewareInterface|RequestHandlerInterface>
      */
     #[NoDiscard]
+    #[Override]
     public function resolve(iterable $pipeline): Iterator
     {
         foreach ($pipeline as $class) {
