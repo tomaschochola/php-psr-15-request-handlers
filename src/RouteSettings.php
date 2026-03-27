@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace TomasChochola\Psr\Http\RequestHandlers;
 
+use Override;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
@@ -26,11 +27,13 @@ readonly class RouteSettings implements RouteSettingsInterface
     /**
      * @var array<mixed, list<class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>>
      */
+    #[Override]
     public readonly array $exact;
 
     /**
      * @var array<mixed, mixed>
      */
+    #[Override]
     public readonly array $trie;
 
     /**
