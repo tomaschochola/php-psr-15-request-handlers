@@ -36,7 +36,7 @@ readonly class RouteParams implements ArrayAccess, IteratorAggregate
     /**
      * @var array<int, string>
      */
-    public readonly array $params;
+    private readonly array $params;
 
     /**
      * @param array<int, string> $params
