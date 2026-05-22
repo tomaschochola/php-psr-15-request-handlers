@@ -29,15 +29,15 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 readonly class ErrorCatcherMiddleware implements MiddlewareInterface
 {
-    private readonly ResponseFactoryInterface $responseFactory;
+    private ResponseFactoryInterface $responseFactory;
 
     public function __construct(ResponseFactoryInterface $responseFactory)
     {
         $this->responseFactory = $responseFactory;
     }
 
-    #[NoDiscard]
-    #[Override]
+    #[NoDiscard()]
+    #[Override()]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         try {
@@ -47,7 +47,7 @@ readonly class ErrorCatcherMiddleware implements MiddlewareInterface
         }
     }
 
-    #[NoDiscard]
+    #[NoDiscard()]
     protected function reject(Error $e, ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if ($e instanceof HttpThrowableInterface) {

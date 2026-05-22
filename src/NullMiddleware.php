@@ -27,8 +27,8 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 readonly class NullMiddleware implements MiddlewareInterface
 {
-    #[NoDiscard]
-    #[Override]
+    #[NoDiscard()]
+    #[Override()]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         return $handler->handle($request);

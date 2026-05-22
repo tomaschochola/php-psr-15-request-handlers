@@ -31,7 +31,7 @@ use const JSON_UNESCAPED_UNICODE;
  */
 readonly class JsonEncoder
 {
-    #[NoDiscard]
+    #[NoDiscard()]
     public function encode(mixed $data): string
     {
         $encoded = json_encode($data, JSON_INVALID_UTF8_SUBSTITUTE | JSON_PRESERVE_ZERO_FRACTION | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);

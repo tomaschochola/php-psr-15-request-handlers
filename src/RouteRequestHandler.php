@@ -36,9 +36,9 @@ use function rawurldecode;
  */
 readonly class RouteRequestHandler implements RequestHandlerInterface
 {
-    private readonly ContainerInterface $container;
+    private ContainerInterface $container;
 
-    private readonly RouteSettingsInterface $registry;
+    private RouteSettingsInterface $registry;
 
     public function __construct(RouteSettingsInterface $registry, ContainerInterface $container)
     {
@@ -46,8 +46,8 @@ readonly class RouteRequestHandler implements RequestHandlerInterface
         $this->container = $container;
     }
 
-    #[NoDiscard]
-    #[Override]
+    #[NoDiscard()]
+    #[Override()]
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         [$pipeline, $params] = $this->match($request);
@@ -58,7 +58,7 @@ readonly class RouteRequestHandler implements RequestHandlerInterface
     /**
      * @return array{0: iterable<mixed, mixed>, 1: list<string>}
      */
-    #[NoDiscard]
+    #[NoDiscard()]
     private function match(ServerRequestInterface $request): array
     {
         $method = $request->getMethod();
@@ -119,7 +119,7 @@ readonly class RouteRequestHandler implements RequestHandlerInterface
      *
      * @return Iterator<mixed, MiddlewareInterface|RequestHandlerInterface>
      */
-    #[NoDiscard]
+    #[NoDiscard()]
     private function resolve(iterable $pipeline): Iterator
     {
         foreach ($pipeline as $class) {

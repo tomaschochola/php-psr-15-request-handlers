@@ -29,15 +29,15 @@ use Psr\Log\LoggerInterface;
  */
 readonly class ErrorLoggerMiddleware implements MiddlewareInterface
 {
-    private readonly LoggerInterface $logger;
+    private LoggerInterface $logger;
 
     public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
     }
 
-    #[NoDiscard]
-    #[Override]
+    #[NoDiscard()]
+    #[Override()]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         try {

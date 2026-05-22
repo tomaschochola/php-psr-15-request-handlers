@@ -31,7 +31,7 @@ readonly class PipelineRunner implements RequestHandlerInterface
     /**
      * @var Iterator<mixed, MiddlewareInterface|RequestHandlerInterface>
      */
-    private readonly Iterator $pipeline;
+    private Iterator $pipeline;
 
     /**
      * @param Iterator<mixed, MiddlewareInterface|RequestHandlerInterface> $pipeline
@@ -41,7 +41,7 @@ readonly class PipelineRunner implements RequestHandlerInterface
         $this->pipeline = $pipeline;
     }
 
-    #[Override]
+    #[Override()]
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         if (!$this->pipeline->valid()) {

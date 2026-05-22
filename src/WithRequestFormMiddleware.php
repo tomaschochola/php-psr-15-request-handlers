@@ -38,9 +38,9 @@ use const UPLOAD_ERR_OK;
  */
 readonly class WithRequestFormMiddleware implements MiddlewareInterface
 {
-    private readonly StreamFactoryInterface $streamFactory;
+    private StreamFactoryInterface $streamFactory;
 
-    private readonly UploadedFileFactoryInterface $uploadedFileFactory;
+    private UploadedFileFactoryInterface $uploadedFileFactory;
 
     public function __construct(StreamFactoryInterface $streamFactory, UploadedFileFactoryInterface $uploadedFileFactory)
     {
@@ -48,8 +48,8 @@ readonly class WithRequestFormMiddleware implements MiddlewareInterface
         $this->uploadedFileFactory = $uploadedFileFactory;
     }
 
-    #[NoDiscard]
-    #[Override]
+    #[NoDiscard()]
+    #[Override()]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         try {
@@ -72,7 +72,7 @@ readonly class WithRequestFormMiddleware implements MiddlewareInterface
         return $handler->handle($request);
     }
 
-    #[NoDiscard]
+    #[NoDiscard()]
     protected function reject(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         return $handler->handle($request);
@@ -80,9 +80,10 @@ readonly class WithRequestFormMiddleware implements MiddlewareInterface
 
     /**
      * @param array<mixed, mixed> $files
+     *
      * @return array<mixed, mixed>
      */
-    #[NoDiscard]
+    #[NoDiscard()]
     private function uploadedFiles(array $files): array
     {
         $result = [];

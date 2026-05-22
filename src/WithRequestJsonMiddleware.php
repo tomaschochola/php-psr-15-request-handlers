@@ -33,8 +33,8 @@ use const JSON_INVALID_UTF8_SUBSTITUTE;
  */
 readonly class WithRequestJsonMiddleware implements MiddlewareInterface
 {
-    #[NoDiscard]
-    #[Override]
+    #[NoDiscard()]
+    #[Override()]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $body = (string) $request->getBody();
@@ -56,7 +56,7 @@ readonly class WithRequestJsonMiddleware implements MiddlewareInterface
         return $handler->handle($request);
     }
 
-    #[NoDiscard]
+    #[NoDiscard()]
     protected function reject(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         return $handler->handle($request);

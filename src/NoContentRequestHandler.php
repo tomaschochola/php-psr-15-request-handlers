@@ -27,15 +27,15 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 readonly class NoContentRequestHandler implements RequestHandlerInterface
 {
-    private readonly ResponseFactoryInterface $responseFactory;
+    private ResponseFactoryInterface $responseFactory;
 
     public function __construct(ResponseFactoryInterface $responseFactory)
     {
         $this->responseFactory = $responseFactory;
     }
 
-    #[NoDiscard]
-    #[Override]
+    #[NoDiscard()]
+    #[Override()]
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         return $this->responseFactory->createResponse(204);

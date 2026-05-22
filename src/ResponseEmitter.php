@@ -34,7 +34,7 @@ use function stream_copy_to_stream;
  */
 readonly class ResponseEmitter implements ResponseEmitterInterface
 {
-    #[Override]
+    #[Override()]
     public function emit(ResponseInterface $response): never
     {
         if (headers_sent()) {
@@ -63,7 +63,7 @@ readonly class ResponseEmitter implements ResponseEmitterInterface
             $body->rewind();
         }
 
-        $to = fopen('php://output', 'w');
+        $to = fopen('php://output', 'wb');
 
         if (!is_resource($to)) {
             throw new UnexpectedValueException('fopen');

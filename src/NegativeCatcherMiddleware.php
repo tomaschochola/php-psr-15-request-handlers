@@ -32,15 +32,15 @@ use function is_int;
  */
 readonly class NegativeCatcherMiddleware implements MiddlewareInterface
 {
-    private readonly ResponseFactoryInterface $responseFactory;
+    private ResponseFactoryInterface $responseFactory;
 
     public function __construct(ResponseFactoryInterface $responseFactory)
     {
         $this->responseFactory = $responseFactory;
     }
 
-    #[NoDiscard]
-    #[Override]
+    #[NoDiscard()]
+    #[Override()]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         try {
@@ -50,7 +50,7 @@ readonly class NegativeCatcherMiddleware implements MiddlewareInterface
         }
     }
 
-    #[NoDiscard]
+    #[NoDiscard()]
     protected function reject(Throwable $e, ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $code = $e->getCode();

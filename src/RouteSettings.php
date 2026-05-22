@@ -27,14 +27,14 @@ readonly class RouteSettings implements RouteSettingsInterface
     /**
      * @var array<mixed, list<class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>>
      */
-    #[Override]
-    public readonly array $exact;
+    #[Override()]
+    public array $exact;
 
     /**
      * @var array<mixed, mixed>
      */
-    #[Override]
-    public readonly array $trie;
+    #[Override()]
+    public array $trie;
 
     /**
      * @param array<mixed, list<class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>> $exact

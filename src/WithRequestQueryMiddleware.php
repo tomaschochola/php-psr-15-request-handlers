@@ -29,8 +29,8 @@ use function parse_str;
  */
 readonly class WithRequestQueryMiddleware implements MiddlewareInterface
 {
-    #[NoDiscard]
-    #[Override]
+    #[NoDiscard()]
+    #[Override()]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $query = $request->getUri()->getQuery();

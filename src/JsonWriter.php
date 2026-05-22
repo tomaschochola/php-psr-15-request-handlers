@@ -23,9 +23,9 @@ use Psr\Http\Message\MessageInterface;
  */
 readonly class JsonWriter
 {
-    private readonly JsonEncoder $jsonEncoder;
+    private JsonEncoder $jsonEncoder;
 
-    private readonly StreamWriter $streamWriter;
+    private StreamWriter $streamWriter;
 
     public function __construct(StreamWriter $streamWriter, JsonEncoder $jsonEncoder)
     {
@@ -40,7 +40,7 @@ readonly class JsonWriter
      *
      * @return T
      */
-    #[NoDiscard]
+    #[NoDiscard()]
     public function write(MessageInterface $message, mixed $data): MessageInterface
     {
         $this->streamWriter->write($message->getBody(), $this->jsonEncoder->encode($data));

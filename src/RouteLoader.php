@@ -41,12 +41,12 @@ readonly class RouteLoader implements IteratorAggregate
     /**
      * @var AppendIterator<string, list<class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>, Iterator<string, list<class-string<MiddlewareInterface>|class-string<RequestHandlerInterface>>>>
      */
-    private readonly AppendIterator $exact;
+    private AppendIterator $exact;
 
     /**
      * @var AppendIterator<string, array<mixed, mixed>, Iterator<string, array<mixed, mixed>>>
      */
-    private readonly AppendIterator $trie;
+    private AppendIterator $trie;
 
     public function __construct()
     {
@@ -54,8 +54,8 @@ readonly class RouteLoader implements IteratorAggregate
         $this->trie = new AppendIterator();
     }
 
-    #[NoDiscard]
-    #[Override]
+    #[NoDiscard()]
+    #[Override()]
     public function getIterator(): Traversable
     {
         $trie = [];

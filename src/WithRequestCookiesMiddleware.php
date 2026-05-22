@@ -31,8 +31,8 @@ use function sscanf;
  */
 readonly class WithRequestCookiesMiddleware implements MiddlewareInterface
 {
-    #[NoDiscard]
-    #[Override]
+    #[NoDiscard()]
+    #[Override()]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $cookies = $request->getHeaderLine('Cookie');

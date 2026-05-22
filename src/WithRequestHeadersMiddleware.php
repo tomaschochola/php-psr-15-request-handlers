@@ -31,8 +31,8 @@ use function is_string;
  */
 readonly class WithRequestHeadersMiddleware implements MiddlewareInterface
 {
-    #[NoDiscard]
-    #[Override]
+    #[NoDiscard()]
+    #[Override()]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         foreach (apache_request_headers() as $key => $value) {

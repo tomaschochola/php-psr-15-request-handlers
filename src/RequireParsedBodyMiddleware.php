@@ -31,15 +31,15 @@ use function is_object;
  */
 readonly class RequireParsedBodyMiddleware implements MiddlewareInterface
 {
-    private readonly ResponseFactoryInterface $responseFactory;
+    private ResponseFactoryInterface $responseFactory;
 
     public function __construct(ResponseFactoryInterface $responseFactory)
     {
         $this->responseFactory = $responseFactory;
     }
 
-    #[NoDiscard]
-    #[Override]
+    #[NoDiscard()]
+    #[Override()]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $parsedBody = $request->getParsedBody();
@@ -59,7 +59,7 @@ readonly class RequireParsedBodyMiddleware implements MiddlewareInterface
         return $handler->handle($request);
     }
 
-    #[NoDiscard]
+    #[NoDiscard()]
     protected function reject(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         return $this->responseFactory->createResponse(415);

@@ -36,7 +36,7 @@ readonly class RouteParams implements ArrayAccess, IteratorAggregate
     /**
      * @var array<int, string>
      */
-    private readonly array $params;
+    private array $params;
 
     /**
      * @param array<int, string> $params
@@ -46,13 +46,13 @@ readonly class RouteParams implements ArrayAccess, IteratorAggregate
         $this->params = $params;
     }
 
-    #[Override]
+    #[Override()]
     public function getIterator(): Traversable
     {
         return new ArrayIterator($this->params);
     }
 
-    #[Override]
+    #[Override()]
     public function offsetExists(mixed $offset): bool
     {
         if (!is_int($offset)) {
@@ -62,7 +62,7 @@ readonly class RouteParams implements ArrayAccess, IteratorAggregate
         return isset($this->params[$offset]);
     }
 
-    #[Override]
+    #[Override()]
     public function offsetGet(mixed $offset): string
     {
         if (!is_int($offset) || !isset($this->params[$offset])) {
@@ -72,13 +72,13 @@ readonly class RouteParams implements ArrayAccess, IteratorAggregate
         return $this->params[$offset];
     }
 
-    #[Override]
+    #[Override()]
     public function offsetSet(mixed $offset, mixed $value): never
     {
         throw new LogicException('never');
     }
 
-    #[Override]
+    #[Override()]
     public function offsetUnset(mixed $offset): never
     {
         throw new LogicException('never');

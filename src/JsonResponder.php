@@ -24,9 +24,9 @@ use Psr\Http\Message\ResponseInterface;
  */
 readonly class JsonResponder
 {
-    private readonly JsonWriter $jsonWriter;
+    private JsonWriter $jsonWriter;
 
-    private readonly ResponseFactoryInterface $responseFactory;
+    private ResponseFactoryInterface $responseFactory;
 
     public function __construct(JsonWriter $jsonWriter, ResponseFactoryInterface $responseFactory)
     {
@@ -34,7 +34,7 @@ readonly class JsonResponder
         $this->responseFactory = $responseFactory;
     }
 
-    #[NoDiscard]
+    #[NoDiscard()]
     public function createResponse(int $code, string $reasonPhrase, mixed $data): ResponseInterface
     {
         $response = $this->responseFactory->createResponse($code, $reasonPhrase);
