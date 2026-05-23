@@ -63,7 +63,6 @@ readonly class RouteRequestHandler implements RequestHandlerInterface
     {
         $method = $request->getMethod();
         $path = $request->getUri()->getPath();
-
         $exact = $this->registry->exact["{$method} {$path}"] ?? $this->registry->exact["* {$path}"] ?? $this->registry->exact["{$method} *"] ?? $this->registry->exact['* *'] ?? null;
 
         if (is_iterable($exact)) {
