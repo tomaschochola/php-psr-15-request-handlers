@@ -94,7 +94,7 @@ readonly class WithRequestFormMiddleware implements MiddlewareInterface
             if (!isset($value['tmp_name']) || is_array($value['tmp_name'])) {
                 $result[$key] = $this->uploadedFiles($value);
             } else {
-                $tmpName = $value['tmp_name'] ?? null;
+                $tmpName = $value['tmp_name'];
                 $size = $value['size'] ?? null;
                 $error = $value['error'] ?? null;
                 $clientFilename = $value['name'] ?? null;
