@@ -31,6 +31,7 @@ use TomasChochola\Psr\Http\RequestHandlers\StreamWriter;
 use UnexpectedValueException;
 
 use function iterator_to_array;
+use function sprintf;
 
 /**
  * @internal
@@ -79,7 +80,7 @@ final class RequestHandlersTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessageIs('$offset');
 
-        (void) $params[2];
+        self::fail(sprintf('Expected offset 2 to throw, got %s', $params[2]));
     }
 
     #[Test()]
