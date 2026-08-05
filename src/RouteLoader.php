@@ -73,6 +73,8 @@ readonly class RouteLoader implements IteratorAggregate
      */
     public function route(iterable $methods, string $path, iterable $pipeline): void
     {
+        $pipeline = iterator_to_array($pipeline, false);
+
         foreach ($methods as $method) {
             if (str_contains($path, '?')) {
                 $this->trie($method, $path, $pipeline);
