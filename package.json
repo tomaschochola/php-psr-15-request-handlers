@@ -31,10 +31,7 @@
         "TomasChochola",
         "Tomas Chochola",
         "Tomáš Chochola",
-        "http",
-        "middleware",
-        "psr-15",
-        "request-handler"
+        "php-psr-15-request-handlers"
     ],
     "license": "CC-BY-ND-4.0",
     "name": "@tomaschochola/php-psr-15-request-handlers",
